@@ -68,5 +68,12 @@
     "forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */
   },
   "exclude": ["node_modules", "dist"],
-  "include": ["src/**/*"]
+  "include": [
+    "container/**/*",
+    "injection/**/*",
+    "instance-meta/**/*",
+    "token/**/*",
+    "util/**/*",
+    "index.ts"
+  ]
 }
