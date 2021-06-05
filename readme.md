@@ -1,5 +1,7 @@
 ## 安装
- - 待添加
+```
+$ npm install git+https://github.com/gityoog/ioc-di.git --save
+```
 
 ## 使用
  - 使用 `@Root()` 装饰器为当前类添加一个顶层容器 会依次初始化所有可注入类和子容器
