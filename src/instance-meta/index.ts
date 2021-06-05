@@ -95,6 +95,6 @@ export default class InstanceMeta {
       InstanceMeta.Get(value)?.init(container)
     })
     this.readyCallback.forEach(item => item.forEach(fn => fn()))
-    this.readyCallback.splice(0, this.readyCallback.length)
+    this.readyCallback = [[], []]
   }
 }
