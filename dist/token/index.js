@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var Token = /** @class */ (function () {
     function Token(value) {
         this.value = value;
@@ -15,4 +17,4 @@ var Token = /** @class */ (function () {
     Token.map = new Map();
     return Token;
 }());
-export default Token;
+exports.default = Token;

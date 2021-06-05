@@ -1,6 +1,8 @@
-import "reflect-metadata";
-import { isClass } from "../util";
-import Token from '../token';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+require("reflect-metadata");
+var util_1 = require("../util");
+var token_1 = require("../token");
 var Injection = /** @class */ (function () {
     function Injection(options) {
         this.options = options;
@@ -24,14 +26,14 @@ var Injection = /** @class */ (function () {
             constructor = this.options.ref();
         }
         else {
-            if (isClass(this.options.token)) {
+            if (util_1.isClass(this.options.token)) {
                 constructor = this.options.token;
             }
             else {
                 constructor = this.options.type;
             }
         }
-        if (isClass(constructor)) {
+        if (util_1.isClass(constructor)) {
             return new constructor;
         }
         else {
@@ -42,13 +44,13 @@ var Injection = /** @class */ (function () {
     Injection.prototype.getToken = function () {
         var _a;
         if ('ref' in this.options) {
-            return Token.Create(this.options.ref());
+            return token_1.default.Create(this.options.ref());
         }
         else {
-            return Token.Create((_a = this.options.token) !== null && _a !== void 0 ? _a : this.options.type);
+            return token_1.default.Create((_a = this.options.token) !== null && _a !== void 0 ? _a : this.options.type);
         }
     };
     Injection.key = Symbol('');
     return Injection;
 }());
-export default Injection;
+exports.default = Injection;

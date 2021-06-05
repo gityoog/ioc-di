@@ -1,11 +1,13 @@
-import Token from "../token";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var token_1 = require("../token");
 var Container = /** @class */ (function () {
     function Container(options) {
         var _this = this;
         this.dataMap = new WeakMap();
         this.resolverMap = new WeakMap();
         options === null || options === void 0 ? void 0 : options.forEach(function (item) {
-            _this.register(Token.Create(item.token), item.resolver);
+            _this.register(token_1.default.Create(item.token), item.resolver);
         });
     }
     Container.prototype.link = function (parent) {
@@ -55,4 +57,4 @@ var Container = /** @class */ (function () {
     };
     return Container;
 }());
-export default Container;
+exports.default = Container;

@@ -1,6 +1,11 @@
-export function isClass(value) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.isObject = exports.isClass = void 0;
+function isClass(value) {
     return typeof value === 'function' && value !== Object;
 }
-export function isObject(value) {
+exports.isClass = isClass;
+function isObject(value) {
     return value instanceof Object;
 }
+exports.isObject = isObject;

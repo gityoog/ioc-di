@@ -11,7 +11,7 @@
     "emitDecoratorMetadata": true,
     "resolveJsonModule": true,
     "allowJs": false,
-    "module": "esnext",
+    "module": "commonjs",
     "target": "ES5",
     "outDir": "./dist",
     "lib": [
@@ -20,5 +20,8 @@
       "dom.iterable",
       "ScriptHost"
     ]
-  }
+  },
+  "include": [
+    "src/**/*"
+  ]
 }

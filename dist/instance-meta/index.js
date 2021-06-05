@@ -1,4 +1,6 @@
-import Injection from "../injection";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var injection_1 = require("../injection");
 var InstanceMeta = /** @class */ (function () {
     function InstanceMeta(instance) {
         var _this = this;
@@ -28,7 +30,7 @@ var InstanceMeta = /** @class */ (function () {
     };
     InstanceMeta.prototype.addInjections = function (prototype) {
         var _a;
-        (_a = this.injections).push.apply(_a, Injection.Get(prototype));
+        (_a = this.injections).push.apply(_a, injection_1.default.Get(prototype));
     };
     InstanceMeta.prototype.onReady = function (callback, index) {
         if (index === void 0) { index = 1; }
@@ -96,4 +98,4 @@ var InstanceMeta = /** @class */ (function () {
     InstanceMeta.map = new WeakMap();
     return InstanceMeta;
 }());
-export default InstanceMeta;
+exports.default = InstanceMeta;

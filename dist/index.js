@@ -1,3 +1,4 @@
+"use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -18,33 +19,37 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
             r[k] = a[j];
     return r;
 };
-import "reflect-metadata";
-import Injection from './injection';
-import DiContainer from './container';
-import InstanceMeta from './instance-meta';
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Container = exports.Root = exports.Concat = exports.Already = exports.Service = exports.InjectRef = exports.Inject = void 0;
+require("reflect-metadata");
+var injection_1 = require("./injection");
+var container_1 = require("./container");
+var instance_meta_1 = require("./instance-meta");
 /** 注入属性
  * - `@Inject(token?) prop: Type`
  */
-export function Inject(token) {
+function Inject(token) {
     return function (prototype, key) {
-        Injection.Add(prototype, {
+        injection_1.default.Add(prototype, {
             key: key,
             token: token,
             type: Reflect.getMetadata('design:type', prototype, key)
         });
     };
 }
+exports.Inject = Inject;
 /** 注入属性(循环引用)
  * - `@InjectRef(() => token) prop: Type`
  */
-export function InjectRef(ref) {
+function InjectRef(ref) {
     return function (prototype, key) {
-        Injection.Add(prototype, {
+        injection_1.default.Add(prototype, {
             key: key,
             ref: ref
         });
     };
 }
+exports.InjectRef = InjectRef;
 /**
  * 标记当前类需要容器初始化
  *
@@ -52,7 +57,7 @@ export function InjectRef(ref) {
  *
  * `class Target {}`
  */
-export function Service() {
+function Service() {
     return function (target) {
         return /** @class */ (function (_super) {
             __extends(class_1, _super);
@@ -62,13 +67,14 @@ export function Service() {
                     args[_i] = arguments[_i];
                 }
                 var _this = _super.apply(this, args) || this;
-                InstanceMeta.Init(_this, target.prototype);
+                instance_meta_1.default.Init(_this, target.prototype);
                 return _this;
             }
             return class_1;
         }(target));
     };
 }
+exports.Service = Service;
 /**
  * 当容器初始化完成后才运行
  *
@@ -77,7 +83,7 @@ export function Service() {
  * `method(){
  * }`
  */
-export function Already(target, propertyKey, descriptor) {
+function Already(target, propertyKey, descriptor) {
     var method = descriptor.value;
     descriptor.value = function () {
         var _this = this;
@@ -85,20 +91,22 @@ export function Already(target, propertyKey, descriptor) {
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i] = arguments[_i];
         }
-        InstanceMeta.Get(this, true).onReady(function () {
+        instance_meta_1.default.Get(this, true).onReady(function () {
             method.apply(_this, args);
         });
     };
 }
+exports.Already = Already;
 /**
  * 使目标类实例使用当前实例的容器
  *
  * `Concat(this, new Class)`
  */
-export function Concat(target, instance) {
-    InstanceMeta.Get(target, true).addInstance(instance);
+function Concat(target, instance) {
+    instance_meta_1.default.Get(target, true).addInstance(instance);
     return instance;
 }
+exports.Concat = Concat;
 /**
  * 从当前类开始自动初始化容器
  *
@@ -107,7 +115,7 @@ export function Concat(target, instance) {
  * `class Target { }`
  *
  */
-export function Root() {
+function Root() {
     var options = [];
     for (var _i = 0; _i < arguments.length; _i++) {
         options[_i] = arguments[_i];
@@ -121,13 +129,14 @@ export function Root() {
                     args[_i] = arguments[_i];
                 }
                 var _this = _super.apply(this, args) || this;
-                InstanceMeta.Get(_this, true).init(new (DiContainer.bind.apply(DiContainer, __spreadArrays([void 0], options)))());
+                instance_meta_1.default.Get(_this, true).init(new (container_1.default.bind.apply(container_1.default, __spreadArrays([void 0], options)))());
                 return _this;
             }
             return class_2;
         }(target));
     };
 }
+exports.Root = Root;
 /**
  * 为当前类添加一个子容器
  *
@@ -136,7 +145,7 @@ export function Root() {
  * `class Target { }`
  *
  */
-export function Container() {
+function Container() {
     var options = [];
     for (var _i = 0; _i < arguments.length; _i++) {
         options[_i] = arguments[_i];
@@ -150,10 +159,11 @@ export function Container() {
                     args[_i] = arguments[_i];
                 }
                 var _this = _super.apply(this, args) || this;
-                InstanceMeta.Get(_this, true).setContainer(new (DiContainer.bind.apply(DiContainer, __spreadArrays([void 0], options)))());
+                instance_meta_1.default.Get(_this, true).setContainer(new (container_1.default.bind.apply(container_1.default, __spreadArrays([void 0], options)))());
                 return _this;
             }
             return class_3;
         }(target));
     };
 }
+exports.Container = Container;
