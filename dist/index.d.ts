@@ -57,3 +57,4 @@ export declare function Container(...options: ConstructorParameters<typeof DiCon
         [x: string]: any;
     };
 } & T;
+export declare function GetContainer(instance: Object): DiContainer | undefined;
