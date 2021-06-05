@@ -56,9 +56,9 @@ export function Service() {
  */
 export function Already<T extends object>(target: T, propertyKey: string, descriptor: PropertyDescriptor) {
   const method = descriptor.value as Function
-  descriptor.value = function () {
+  descriptor.value = function (...args: any[]) {
     InstanceMeta.Get(this, true).onReady(() => {
-      method.apply(this, arguments)
+      method.apply(this, args)
     })
   }
 }

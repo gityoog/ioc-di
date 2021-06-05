@@ -1,0 +1,21 @@
+{
+  "name": "ioc-di",
+  "version": "1.0.0",
+  "description": "- 待添加",
+  "main": "./dist/index.js",
+  "dependencies": {
+    "reflect-metadata": "^0.1.13"
+  },
+  "devDependencies": {},
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gityoog/ioc-di.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gityoog/ioc-di/issues"
+  },
+  "homepage": "https://github.com/gityoog/ioc-di#readme"
+}
