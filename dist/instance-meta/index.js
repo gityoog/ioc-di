@@ -73,6 +73,7 @@ var InstanceMeta = /** @class */ (function () {
         else {
             this.container = targetContainer;
         }
+        this.isInit = true;
         var container = this.container;
         this.injections.map(function (injection) {
             var _a;
@@ -91,7 +92,6 @@ var InstanceMeta = /** @class */ (function () {
             var _a;
             (_a = InstanceMeta.Get(value)) === null || _a === void 0 ? void 0 : _a.init(container);
         });
-        this.isInit = true;
         this.readyCallback.forEach(function (item) { return item.forEach(function (fn) { return fn(); }); });
         this.readyCallback.splice(0, this.readyCallback.length);
     };

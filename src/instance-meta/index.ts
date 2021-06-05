@@ -77,7 +77,7 @@ export default class InstanceMeta {
     } else {
       this.container = targetContainer
     }
-
+    this.isInit = true
     const container = this.container
     this.injections.map(injection => {
       const token = injection.getToken()
@@ -94,8 +94,6 @@ export default class InstanceMeta {
     }).forEach(value => {
       InstanceMeta.Get(value)?.init(container)
     })
-
-    this.isInit = true
     this.readyCallback.forEach(item => item.forEach(fn => fn()))
     this.readyCallback.splice(0, this.readyCallback.length)
   }
