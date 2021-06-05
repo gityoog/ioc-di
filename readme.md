@@ -15,6 +15,7 @@
 // file entry.ts
 
 @Root()
+@Service()
 class Entry {
   @Inject() service!: Service
 }
@@ -52,7 +53,7 @@ class Foo {
   @InjectRef(() => Foo2) foo2!: Foo2
   
   method() {
-    this.foo2.method()
+    console.log(this.foo2)
   }
 }
 
@@ -63,7 +64,7 @@ class Foo2 {
   @InjectRef(() => Foo) foo!: Foo
 
   method() {
-    this.foo.method()
+    console.log(this.foo)
   }
 }
 
