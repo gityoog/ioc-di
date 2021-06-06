@@ -86,9 +86,9 @@ export function Root(...options: ConstructorParameters<typeof DiContainer>) {
     return class extends target {
       constructor(...args: any[]) {
         super(...args)
-        InstanceMeta.Get(this, true).init(
-          new DiContainer(...options)
-        )
+        const container = new DiContainer(...options)
+        container.register(this.constructor, () => this)
+        InstanceMeta.Get(this, true).init(container)
       }
     }
   }
@@ -113,6 +113,6 @@ export function Container(...options: ConstructorParameters<typeof DiContainer>)
   }
 }
 
-export function GetContainer(instance: Object){
+export function GetContainer(instance: Object) {
   return InstanceMeta.Get(instance)?.container
 }

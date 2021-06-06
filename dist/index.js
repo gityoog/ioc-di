@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
@@ -129,7 +129,9 @@ function Root() {
                     args[_i] = arguments[_i];
                 }
                 var _this = _super.apply(this, args) || this;
-                instance_meta_1.default.Get(_this, true).init(new (container_1.default.bind.apply(container_1.default, __spreadArrays([void 0], options)))());
+                var container = new (container_1.default.bind.apply(container_1.default, __spreadArrays([void 0], options)))();
+                container.register(_this.constructor, function () { return _this; });
+                instance_meta_1.default.Get(_this, true).init(container);
                 return _this;
             }
             return class_2;
