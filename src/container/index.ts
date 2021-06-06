@@ -9,8 +9,8 @@ export default class Container {
     this.parent = parent
   }
 
-  register<T>(token: Token, resolver: () => T) {
-    this.resolverMap.set(token, resolver)
+  register<T>(key: any, resolver: () => T) {
+    this.resolverMap.set(Token.Create(key), resolver)
   }
 
   constructor(options?: {
@@ -18,7 +18,7 @@ export default class Container {
     resolver: () => any
   }[]) {
     options?.forEach(item => {
-      this.register(Token.Create(item.token), item.resolver)
+      this.register(item.token, item.resolver)
     })
   }
 

@@ -116,5 +116,3 @@ export function Container(...options: ConstructorParameters<typeof DiContainer>)
 export function GetContainer(instance: Object){
   return InstanceMeta.Get(instance)?.container
 }
-
-export { default as Token } from './token'
