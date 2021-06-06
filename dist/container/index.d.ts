@@ -4,7 +4,7 @@ export default class Container {
     resolverMap: WeakMap<Token, () => any>;
     parent?: this;
     link(parent: this): void;
-    register<T>(token: Token, resolver: () => T): void;
+    register<T>(key: any, resolver: () => T): void;
     constructor(options?: {
         token: any;
         resolver: () => any;

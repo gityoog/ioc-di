@@ -172,5 +172,3 @@ function GetContainer(instance) {
     return (_a = instance_meta_1.default.Get(instance)) === null || _a === void 0 ? void 0 : _a.container;
 }
 exports.GetContainer = GetContainer;
-var token_1 = require("./token");
-Object.defineProperty(exports, "Token", { enumerable: true, get: function () { return token_1.default; } });

@@ -58,4 +58,3 @@ export declare function Container(...options: ConstructorParameters<typeof DiCon
     };
 } & T;
 export declare function GetContainer(instance: Object): DiContainer | undefined;
-export { default as Token } from './token';

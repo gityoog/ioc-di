@@ -7,14 +7,14 @@ var Container = /** @class */ (function () {
         this.dataMap = new WeakMap();
         this.resolverMap = new WeakMap();
         options === null || options === void 0 ? void 0 : options.forEach(function (item) {
-            _this.register(token_1.default.Create(item.token), item.resolver);
+            _this.register(item.token, item.resolver);
         });
     }
     Container.prototype.link = function (parent) {
         this.parent = parent;
     };
-    Container.prototype.register = function (token, resolver) {
-        this.resolverMap.set(token, resolver);
+    Container.prototype.register = function (key, resolver) {
+        this.resolverMap.set(token_1.default.Create(key), resolver);
     };
     Container.prototype.getData = function (token) {
         var _a;
