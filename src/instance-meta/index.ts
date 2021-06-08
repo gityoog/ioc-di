@@ -1,12 +1,14 @@
 import Container from "../container"
 import Injection from "../injection"
-
+import PrototypeMeta from "../prototype-meta"
+import DiContainer from '../container'
 
 export default class InstanceMeta {
   static map = new WeakMap<Object, InstanceMeta>()
   static Init(instance: Object, prototype: Object) {
     const data = this.Get(instance, true)
     data.addInjections(prototype)
+    data.addDestroyKeys(prototype)
   }
   static Get(instance: Object): InstanceMeta | undefined
   static Get(instance: Object, create: true): InstanceMeta
@@ -32,31 +34,44 @@ export default class InstanceMeta {
   private injections: Injection[] = []
   addInjections(prototype: Object) {
     this.injections.push(
-      ...Injection.Get(prototype)
+      ...PrototypeMeta.GetInjections(prototype)
     )
   }
 
-  private isInit = false
-  private readyCallback: [Array<() => void>, Array<() => void>] = [[], []]
-  onReady(callback: () => void, index: 0 | 1 = 1): void {
-    if (this.isInit) {
-      callback()
-    } else {
-      this.readyCallback[index].push(callback)
+  private destroys = new Set<Function>()
+  addDestroyKeys(prototype: Object) {
+    PrototypeMeta.GetDestroys(prototype).forEach(fn => {
+      this.destroys.add(fn)
+    })
+  }
+  private isDestroyed = false
+  destroy() {
+    if (this.isDestroyed) {
+      return
     }
+    this.isDestroyed = true
+    this.destroys.forEach(fn => {
+      fn.apply(this.instance, [])
+    })
+    this.destroys.clear()
+    this.container?.destroy()
   }
 
-  addInstance(instance: Object) {
-    this.onReady(() => {
-      const meta = InstanceMeta.Get(instance)
-      if (!meta) {
-        throw new Error('InstanceMeta does not exist')
-      }
-      if (!this.container) {
-        throw new Error('Container does not exis')
-      }
-      meta.init(this.container)
-    }, 0)
+  private isInit = false
+  private readyCallback: [Array<(container: DiContainer) => void>, Array<(container: DiContainer) => void>] = [[], []]
+  onReady(callback: (container: DiContainer) => void): void {
+    if (this.isInit) {
+      callback(this.container!)
+    } else {
+      this.readyCallback[0].push(callback)
+    }
+  }
+  afterReady(callback: (container: DiContainer) => void) {
+    if (this.isInit) {
+      callback(this.container!)
+    } else {
+      this.readyCallback[1].push(callback)
+    }
   }
 
   container?: Container
@@ -94,7 +109,7 @@ export default class InstanceMeta {
     }).forEach(value => {
       InstanceMeta.Get(value)?.init(container)
     })
-    this.readyCallback.forEach(item => item.forEach(fn => fn()))
+    this.readyCallback.forEach(item => item.forEach(fn => fn(container)))
     this.readyCallback = [[], []]
   }
 }
