@@ -1,15 +1,16 @@
 import "reflect-metadata"
 import { Constructor } from "./util"
-import Injection from './injection'
 import DiContainer from './container'
 import InstanceMeta from './instance-meta'
+import Token from "./token"
+import PrototypeMeta from './prototype-meta'
 
 /** 注入属性
  * - `@Inject(token?) prop: Type`
  */
 export function Inject(token?: any) {
   return function <T extends Object>(prototype: T, key: string) {
-    Injection.Add(prototype, {
+    PrototypeMeta.AddInjection(prototype, {
       key,
       token,
       type: Reflect.getMetadata('design:type', prototype, key)
@@ -22,7 +23,7 @@ export function Inject(token?: any) {
  */
 export function InjectRef(ref: () => any) {
   return function <T extends Object>(prototype: T, key: string) {
-    Injection.Add(prototype, {
+    PrototypeMeta.AddInjection(prototype, {
       key,
       ref
     })
@@ -57,7 +58,7 @@ export function Service() {
 export function Already<T extends object>(target: T, propertyKey: string, descriptor: PropertyDescriptor) {
   const method = descriptor.value as Function
   descriptor.value = function (...args: any[]) {
-    InstanceMeta.Get(this, true).onReady(() => {
+    InstanceMeta.Get(this, true).afterReady(() => {
       method.apply(this, args)
     })
   }
@@ -69,7 +70,14 @@ export function Already<T extends object>(target: T, propertyKey: string, descri
  * `Concat(this, new Class)`
  */
 export function Concat<T extends Object>(target: Object, instance: T) {
-  InstanceMeta.Get(target, true).addInstance(instance)
+  InstanceMeta.Get(target, true).onReady(container => {
+    const meta = InstanceMeta.Get(instance)
+    if (!meta) {
+      throw new Error('Can\'t use target to initialize this')
+    }
+    container.addData(instance)
+    meta.init(container)
+  })
   return instance
 }
 
@@ -87,7 +95,7 @@ export function Root(...options: ConstructorParameters<typeof DiContainer>) {
       constructor(...args: any[]) {
         super(...args)
         const container = new DiContainer(...options)
-        container.register(this.constructor, () => this)
+        container.setData(Token.Create(this.constructor), this)
         InstanceMeta.Get(this, true).init(container)
       }
     }
@@ -115,4 +123,11 @@ export function Container(...options: ConstructorParameters<typeof DiContainer>)
 
 export function GetContainer(instance: Object) {
   return InstanceMeta.Get(instance)?.container
+}
+
+export function Destroy<T extends object>(prototype: T, propertyKey: string, descriptor: PropertyDescriptor) {
+  PrototypeMeta.AddDestroy(prototype, descriptor.value)
+  descriptor.value = function () {
+    InstanceMeta.Get(this)?.destroy()
+  }
 }
