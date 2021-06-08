@@ -13,22 +13,7 @@ type options = {
   })
 
 export default class Injection {
-  private static key = Symbol('')
-  static Add(target: Object, options: options) {
-    Reflect.defineMetadata(
-      this.key,
-      this.Get(target).concat(
-        new this(options)
-      ),
-      target
-    )
-  }
-  static Get(target: Object): Injection[] {
-    return Reflect.getMetadata(this.key, target) || []
-  }
-
-  private constructor(private options: options) { }
-
+  constructor(private options: options) { }
   get key() {
     return this.options.key
   }
