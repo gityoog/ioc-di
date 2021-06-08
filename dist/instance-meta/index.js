@@ -1,11 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var injection_1 = require("../injection");
+var prototype_meta_1 = require("../prototype-meta");
 var InstanceMeta = /** @class */ (function () {
     function InstanceMeta(instance) {
         var _this = this;
         this.instance = instance;
         this.injections = [];
+        this.destroys = new Set();
+        this.isDestroyed = false;
         this.isInit = false;
         this.readyCallback = [[], []];
         setTimeout(function () {
@@ -17,6 +19,7 @@ var InstanceMeta = /** @class */ (function () {
     InstanceMeta.Init = function (instance, prototype) {
         var data = this.Get(instance, true);
         data.addInjections(prototype);
+        data.addDestroyKeys(prototype);
     };
     InstanceMeta.Get = function (instance, create) {
         if (this.map.has(instance)) {
@@ -30,29 +33,42 @@ var InstanceMeta = /** @class */ (function () {
     };
     InstanceMeta.prototype.addInjections = function (prototype) {
         var _a;
-        (_a = this.injections).push.apply(_a, injection_1.default.Get(prototype));
+        (_a = this.injections).push.apply(_a, prototype_meta_1.default.GetInjections(prototype));
     };
-    InstanceMeta.prototype.onReady = function (callback, index) {
-        if (index === void 0) { index = 1; }
+    InstanceMeta.prototype.addDestroyKeys = function (prototype) {
+        var _this = this;
+        prototype_meta_1.default.GetDestroys(prototype).forEach(function (fn) {
+            _this.destroys.add(fn);
+        });
+    };
+    InstanceMeta.prototype.destroy = function () {
+        var _this = this;
+        var _a;
+        if (this.isDestroyed) {
+            return;
+        }
+        this.isDestroyed = true;
+        this.destroys.forEach(function (fn) {
+            fn.apply(_this.instance, []);
+        });
+        this.destroys.clear();
+        (_a = this.container) === null || _a === void 0 ? void 0 : _a.destroy();
+    };
+    InstanceMeta.prototype.onReady = function (callback) {
         if (this.isInit) {
-            callback();
+            callback(this.container);
         }
         else {
-            this.readyCallback[index].push(callback);
+            this.readyCallback[0].push(callback);
         }
     };
-    InstanceMeta.prototype.addInstance = function (instance) {
-        var _this = this;
-        this.onReady(function () {
-            var meta = InstanceMeta.Get(instance);
-            if (!meta) {
-                throw new Error('InstanceMeta does not exist');
-            }
-            if (!_this.container) {
-                throw new Error('Container does not exis');
-            }
-            meta.init(_this.container);
-        }, 0);
+    InstanceMeta.prototype.afterReady = function (callback) {
+        if (this.isInit) {
+            callback(this.container);
+        }
+        else {
+            this.readyCallback[1].push(callback);
+        }
     };
     InstanceMeta.prototype.setContainer = function (container) {
         if (!this.container) {
@@ -92,7 +108,7 @@ var InstanceMeta = /** @class */ (function () {
             var _a;
             (_a = InstanceMeta.Get(value)) === null || _a === void 0 ? void 0 : _a.init(container);
         });
-        this.readyCallback.forEach(function (item) { return item.forEach(function (fn) { return fn(); }); });
+        this.readyCallback.forEach(function (item) { return item.forEach(function (fn) { return fn(container); }); });
         this.readyCallback = [[], []];
     };
     InstanceMeta.map = new WeakMap();

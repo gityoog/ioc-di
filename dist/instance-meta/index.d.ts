@@ -1,4 +1,5 @@
 import Container from "../container";
+import DiContainer from '../container';
 export default class InstanceMeta {
     private instance;
     static map: WeakMap<Object, InstanceMeta>;
@@ -8,10 +9,14 @@ export default class InstanceMeta {
     private constructor();
     private injections;
     addInjections(prototype: Object): void;
+    private destroys;
+    addDestroyKeys(prototype: Object): void;
+    private isDestroyed;
+    destroy(): void;
     private isInit;
     private readyCallback;
-    onReady(callback: () => void, index?: 0 | 1): void;
-    addInstance(instance: Object): void;
+    onReady(callback: (container: DiContainer) => void): void;
+    afterReady(callback: (container: DiContainer) => void): void;
     container?: Container;
     setContainer(container: Container): void;
     init(targetContainer: Container): void;

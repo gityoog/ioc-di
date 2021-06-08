@@ -11,10 +11,7 @@ declare type options = {
 });
 export default class Injection {
     private options;
-    private static key;
-    static Add(target: Object, options: options): void;
-    static Get(target: Object): Injection[];
-    private constructor();
+    constructor(options: options);
     get key(): string;
     factory(): any;
     getToken(): Token;

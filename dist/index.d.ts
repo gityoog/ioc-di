@@ -58,3 +58,4 @@ export declare function Container(...options: ConstructorParameters<typeof DiCon
     };
 } & T;
 export declare function GetContainer(instance: Object): DiContainer | undefined;
+export declare function Destroy<T extends object>(prototype: T, propertyKey: string, descriptor: PropertyDescriptor): void;

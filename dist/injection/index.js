@@ -7,12 +7,6 @@ var Injection = /** @class */ (function () {
     function Injection(options) {
         this.options = options;
     }
-    Injection.Add = function (target, options) {
-        Reflect.defineMetadata(this.key, this.Get(target).concat(new this(options)), target);
-    };
-    Injection.Get = function (target) {
-        return Reflect.getMetadata(this.key, target) || [];
-    };
     Object.defineProperty(Injection.prototype, "key", {
         get: function () {
             return this.options.key;
@@ -50,7 +44,6 @@ var Injection = /** @class */ (function () {
             return token_1.default.Create((_a = this.options.token) !== null && _a !== void 0 ? _a : this.options.type);
         }
     };
-    Injection.key = Symbol('');
     return Injection;
 }());
 exports.default = Injection;

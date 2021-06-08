@@ -20,17 +20,18 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
     return r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GetContainer = exports.Container = exports.Root = exports.Concat = exports.Already = exports.Service = exports.InjectRef = exports.Inject = void 0;
+exports.Destroy = exports.GetContainer = exports.Container = exports.Root = exports.Concat = exports.Already = exports.Service = exports.InjectRef = exports.Inject = void 0;
 require("reflect-metadata");
-var injection_1 = require("./injection");
 var container_1 = require("./container");
 var instance_meta_1 = require("./instance-meta");
+var token_1 = require("./token");
+var prototype_meta_1 = require("./prototype-meta");
 /** 注入属性
  * - `@Inject(token?) prop: Type`
  */
 function Inject(token) {
     return function (prototype, key) {
-        injection_1.default.Add(prototype, {
+        prototype_meta_1.default.AddInjection(prototype, {
             key: key,
             token: token,
             type: Reflect.getMetadata('design:type', prototype, key)
@@ -43,7 +44,7 @@ exports.Inject = Inject;
  */
 function InjectRef(ref) {
     return function (prototype, key) {
-        injection_1.default.Add(prototype, {
+        prototype_meta_1.default.AddInjection(prototype, {
             key: key,
             ref: ref
         });
@@ -91,7 +92,7 @@ function Already(target, propertyKey, descriptor) {
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i] = arguments[_i];
         }
-        instance_meta_1.default.Get(this, true).onReady(function () {
+        instance_meta_1.default.Get(this, true).afterReady(function () {
             method.apply(_this, args);
         });
     };
@@ -103,7 +104,14 @@ exports.Already = Already;
  * `Concat(this, new Class)`
  */
 function Concat(target, instance) {
-    instance_meta_1.default.Get(target, true).addInstance(instance);
+    instance_meta_1.default.Get(target, true).onReady(function (container) {
+        var meta = instance_meta_1.default.Get(instance);
+        if (!meta) {
+            throw new Error('Can\'t use target to initialize this');
+        }
+        container.addData(instance);
+        meta.init(container);
+    });
     return instance;
 }
 exports.Concat = Concat;
@@ -130,7 +138,7 @@ function Root() {
                 }
                 var _this = _super.apply(this, args) || this;
                 var container = new (container_1.default.bind.apply(container_1.default, __spreadArrays([void 0], options)))();
-                container.register(_this.constructor, function () { return _this; });
+                container.setData(token_1.default.Create(_this.constructor), _this);
                 instance_meta_1.default.Get(_this, true).init(container);
                 return _this;
             }
@@ -174,3 +182,11 @@ function GetContainer(instance) {
     return (_a = instance_meta_1.default.Get(instance)) === null || _a === void 0 ? void 0 : _a.container;
 }
 exports.GetContainer = GetContainer;
+function Destroy(prototype, propertyKey, descriptor) {
+    prototype_meta_1.default.AddDestroy(prototype, descriptor.value);
+    descriptor.value = function () {
+        var _a;
+        (_a = instance_meta_1.default.Get(this)) === null || _a === void 0 ? void 0 : _a.destroy();
+    };
+}
+exports.Destroy = Destroy;
