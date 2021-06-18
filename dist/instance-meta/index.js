@@ -52,7 +52,7 @@ var InstanceMeta = /** @class */ (function () {
             fn.apply(_this.instance, []);
         });
         this.destroys.clear();
-        (_a = this.container) === null || _a === void 0 ? void 0 : _a.destroy();
+        (_a = this.myContainer) === null || _a === void 0 ? void 0 : _a.destroy();
     };
     InstanceMeta.prototype.onReady = function (callback) {
         if (this.isInit) {
@@ -70,20 +70,22 @@ var InstanceMeta = /** @class */ (function () {
             this.readyCallback[1].push(callback);
         }
     };
-    InstanceMeta.prototype.setContainer = function (container) {
-        if (!this.container) {
+    InstanceMeta.prototype.bindContainer = function (container) {
+        if (!this.container && !this.myContainer) {
             this.container = container;
+            this.myContainer = container;
         }
         else {
             throw new Error('Container already exists');
         }
+        return this;
     };
     InstanceMeta.prototype.init = function (targetContainer) {
         var _this = this;
         if (this.isInit) {
             return;
         }
-        if (this.container) {
+        if (this.container && this.container !== targetContainer) {
             this.container.link(targetContainer);
         }
         else {
@@ -92,17 +94,18 @@ var InstanceMeta = /** @class */ (function () {
         this.isInit = true;
         var container = this.container;
         this.injections.map(function (injection) {
-            var _a;
             var token = injection.getToken();
             var value = Reflect.get(_this.instance, injection.key);
             if (value === undefined) {
-                value = (_a = container.factory(token)) !== null && _a !== void 0 ? _a : injection.factory();
+                value = container.factory(token, function () { return injection.factory(); });
                 if (value === undefined) {
                     throw new Error('Injection failure');
                 }
                 Reflect.set(_this.instance, injection.key, value);
             }
-            container.setData(token, value);
+            else {
+                container.setData(token, value);
+            }
             return value;
         }).forEach(function (value) {
             var _a;

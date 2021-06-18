@@ -13,7 +13,7 @@ export default class Container {
     }[]);
     getData(token: Token): any;
     resolve(token: Token): any;
-    factory(token: Token): any;
+    factory(token: Token, resolver: () => any): any;
     setData<T>(token: Token, data: T): void;
     addData<T>(data: T): T;
     destroy(): void;

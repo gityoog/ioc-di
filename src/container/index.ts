@@ -42,12 +42,12 @@ export default class Container {
     }
   }
 
-  factory(token: Token) {
+  factory(token: Token, resolver: () => any) {
     const data = this.getData(token)
     if (data !== undefined) {
       return data
     }
-    const value = this.resolve(token)
+    const value = this.resolve(token) || resolver()
     if (value !== undefined) {
       this.setData(token, value)
       return value

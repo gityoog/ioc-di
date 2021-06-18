@@ -54,7 +54,7 @@ export default class InstanceMeta {
       fn.apply(this.instance, [])
     })
     this.destroys.clear()
-    this.container?.destroy()
+    this.myContainer?.destroy()
   }
 
   private isInit = false
@@ -74,20 +74,23 @@ export default class InstanceMeta {
     }
   }
 
+  private myContainer?: Container
   container?: Container
-  setContainer(container: Container) {
-    if (!this.container) {
+  bindContainer(container: Container) {
+    if (!this.container && !this.myContainer) {
       this.container = container
+      this.myContainer = container
     } else {
       throw new Error('Container already exists')
     }
+    return this
   }
 
   init(targetContainer: Container) {
     if (this.isInit) {
       return
     }
-    if (this.container) {
+    if (this.container && this.container !== targetContainer) {
       this.container.link(targetContainer)
     } else {
       this.container = targetContainer
@@ -98,13 +101,14 @@ export default class InstanceMeta {
       const token = injection.getToken()
       let value = Reflect.get(this.instance, injection.key)
       if (value === undefined) {
-        value = container.factory(token) ?? injection.factory()
+        value = container.factory(token, () => injection.factory())
         if (value === undefined) {
           throw new Error('Injection failure')
         }
         Reflect.set(this.instance, injection.key, value)
+      } else {
+        container.setData(token, value)
       }
-      container.setData(token, value)
       return value
     }).forEach(value => {
       InstanceMeta.Get(value)?.init(container)

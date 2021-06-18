@@ -96,7 +96,7 @@ export function Root(...options: ConstructorParameters<typeof DiContainer>) {
         super(...args)
         const container = new DiContainer(...options)
         container.setData(Token.Create(this.constructor), this)
-        InstanceMeta.Get(this, true).init(container)
+        InstanceMeta.Get(this, true).bindContainer(container).init(container)
       }
     }
   }
@@ -115,7 +115,7 @@ export function Container(...options: ConstructorParameters<typeof DiContainer>)
     return class extends target {
       constructor(...args: any[]) {
         super(...args)
-        InstanceMeta.Get(this, true).setContainer(new DiContainer(...options))
+        InstanceMeta.Get(this, true).bindContainer(new DiContainer(...options))
       }
     }
   }

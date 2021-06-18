@@ -38,12 +38,12 @@ var Container = /** @class */ (function () {
             return (_a = this.parent) === null || _a === void 0 ? void 0 : _a.resolve(token);
         }
     };
-    Container.prototype.factory = function (token) {
+    Container.prototype.factory = function (token, resolver) {
         var data = this.getData(token);
         if (data !== undefined) {
             return data;
         }
-        var value = this.resolve(token);
+        var value = this.resolve(token) || resolver();
         if (value !== undefined) {
             this.setData(token, value);
             return value;

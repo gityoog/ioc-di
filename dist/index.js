@@ -139,7 +139,7 @@ function Root() {
                 var _this = _super.apply(this, args) || this;
                 var container = new (container_1.default.bind.apply(container_1.default, __spreadArrays([void 0], options)))();
                 container.setData(token_1.default.Create(_this.constructor), _this);
-                instance_meta_1.default.Get(_this, true).init(container);
+                instance_meta_1.default.Get(_this, true).bindContainer(container).init(container);
                 return _this;
             }
             return class_2;
@@ -169,7 +169,7 @@ function Container() {
                     args[_i] = arguments[_i];
                 }
                 var _this = _super.apply(this, args) || this;
-                instance_meta_1.default.Get(_this, true).setContainer(new (container_1.default.bind.apply(container_1.default, __spreadArrays([void 0], options)))());
+                instance_meta_1.default.Get(_this, true).bindContainer(new (container_1.default.bind.apply(container_1.default, __spreadArrays([void 0], options)))());
                 return _this;
             }
             return class_3;
