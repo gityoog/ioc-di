@@ -1,4 +1,10 @@
 import Token from "../token";
+declare type options = {
+    providers?: {
+        token: any;
+        resolver: () => any;
+    }[];
+};
 export default class Container {
     dataMap: WeakMap<Token, any>;
     resolverMap: WeakMap<Token, () => any>;
@@ -7,10 +13,7 @@ export default class Container {
     link(parent: this): void;
     children: Set<this>;
     register<T>(key: any, resolver: () => T): void;
-    constructor(options?: {
-        token: any;
-        resolver: () => any;
-    }[]);
+    constructor(options?: options);
     getData(token: Token): any;
     resolve(token: Token): any;
     factory(token: Token, resolver: () => any): any;
@@ -18,3 +21,4 @@ export default class Container {
     addData<T>(data: T): T;
     destroy(): void;
 }
+export {};

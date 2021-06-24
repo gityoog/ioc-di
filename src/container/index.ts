@@ -1,6 +1,13 @@
 import InstanceMeta from "../instance-meta"
 import Token from "../token"
 
+type options = {
+  providers?: {
+    token: any
+    resolver: () => any
+  }[]
+}
+
 export default class Container {
   dataMap = new WeakMap<Token, any>()
   resolverMap = new WeakMap<Token, () => any>()
@@ -17,11 +24,8 @@ export default class Container {
     this.resolverMap.set(Token.Create(key), resolver)
   }
 
-  constructor(options?: {
-    token: any
-    resolver: () => any
-  }[]) {
-    options?.forEach(item => {
+  constructor(options?: options) {
+    options?.providers?.forEach(item => {
       this.register(item.token, item.resolver)
     })
   }

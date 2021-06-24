@@ -5,11 +5,12 @@ var token_1 = require("../token");
 var Container = /** @class */ (function () {
     function Container(options) {
         var _this = this;
+        var _a;
         this.dataMap = new WeakMap();
         this.resolverMap = new WeakMap();
         this.dataSet = new Set();
         this.children = new Set();
-        options === null || options === void 0 ? void 0 : options.forEach(function (item) {
+        (_a = options === null || options === void 0 ? void 0 : options.providers) === null || _a === void 0 ? void 0 : _a.forEach(function (item) {
             _this.register(item.token, item.resolver);
         });
     }

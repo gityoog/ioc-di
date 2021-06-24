@@ -69,13 +69,17 @@ export function Already<T extends object>(target: T, propertyKey: string, descri
  * 
  * `Concat(this, new Class)`
  */
-export function Concat<T extends Object>(target: Object, instance: T) {
+export function Concat<T extends Object>(target: Object, instance: T, token?: any) {
   InstanceMeta.Get(target, true).onReady(container => {
     const meta = InstanceMeta.Get(instance)
     if (!meta) {
       throw new Error('Can\'t use target to initialize this')
     }
-    container.addData(instance)
+    if (token) {
+      container.setData(Token.Create(token), instance)
+    } else {
+      container.addData(instance)
+    }
     meta.init(container)
   })
   return instance

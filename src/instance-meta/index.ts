@@ -26,7 +26,7 @@ export default class InstanceMeta {
   private constructor(private instance: Object) {
     setTimeout(() => {
       if (!this.isInit) {
-        console.warn('InstanceMeta Should init')
+        console.warn('InstanceMeta Should init', instance)
       }
     })
   }
@@ -100,14 +100,14 @@ export default class InstanceMeta {
     this.injections.map(injection => {
       const token = injection.getToken()
       let value = Reflect.get(this.instance, injection.key)
-      if (value === undefined) {
+      if (value !== undefined) {
+        container.setData(token, value)
+      } else {
         value = container.factory(token, () => injection.factory())
         if (value === undefined) {
           throw new Error('Injection failure')
         }
         Reflect.set(this.instance, injection.key, value)
-      } else {
-        container.setData(token, value)
       }
       return value
     }).forEach(value => {

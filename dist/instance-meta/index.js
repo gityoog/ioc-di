@@ -12,7 +12,7 @@ var InstanceMeta = /** @class */ (function () {
         this.readyCallback = [[], []];
         setTimeout(function () {
             if (!_this.isInit) {
-                console.warn('InstanceMeta Should init');
+                console.warn('InstanceMeta Should init', instance);
             }
         });
     }
@@ -96,15 +96,15 @@ var InstanceMeta = /** @class */ (function () {
         this.injections.map(function (injection) {
             var token = injection.getToken();
             var value = Reflect.get(_this.instance, injection.key);
-            if (value === undefined) {
+            if (value !== undefined) {
+                container.setData(token, value);
+            }
+            else {
                 value = container.factory(token, function () { return injection.factory(); });
                 if (value === undefined) {
                     throw new Error('Injection failure');
                 }
                 Reflect.set(_this.instance, injection.key, value);
-            }
-            else {
-                container.setData(token, value);
             }
             return value;
         }).forEach(function (value) {

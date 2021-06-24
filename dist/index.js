@@ -103,13 +103,18 @@ exports.Already = Already;
  *
  * `Concat(this, new Class)`
  */
-function Concat(target, instance) {
+function Concat(target, instance, token) {
     instance_meta_1.default.Get(target, true).onReady(function (container) {
         var meta = instance_meta_1.default.Get(instance);
         if (!meta) {
             throw new Error('Can\'t use target to initialize this');
         }
-        container.addData(instance);
+        if (token) {
+            container.setData(token_1.default.Create(token), instance);
+        }
+        else {
+            container.addData(instance);
+        }
         meta.init(container);
     });
     return instance;
