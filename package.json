@@ -4,18 +4,11 @@
   "description": "- 待添加",
   "main": "./dist/index.js",
   "dependencies": {
-    "reflect-metadata": "^0.1.13"
+    "reflect-metadata": "^0.1.13",
+    "typescript": "^4.3.2"
   },
   "devDependencies": {},
   "scripts": {},
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/gityoog/ioc-di.git"
-  },
   "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/gityoog/ioc-di/issues"
-  },
-  "homepage": "https://github.com/gityoog/ioc-di#readme"
+  "license": "ISC"
 }
