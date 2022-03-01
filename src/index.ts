@@ -29,6 +29,17 @@ export function InjectRef(ref: () => any) {
     })
   }
 }
+
+// export function Optional(token?: any) {
+//   return function <T extends Object>(prototype: T, key: string) {
+//     PrototypeMeta.AddInjection(prototype, {
+//       key,
+//       token,
+//       type: Reflect.getMetadata('design:type', prototype, key)
+//     })
+//   }
+// }
+
 /**
  * 标记当前类需要容器初始化
  * 
@@ -119,7 +130,9 @@ export function Container(...options: ConstructorParameters<typeof DiContainer>)
     return class extends target {
       constructor(...args: any[]) {
         super(...args)
-        InstanceMeta.Get(this, true).bindContainer(new DiContainer(...options))
+        const container = new DiContainer(...options)
+        container.setData(Token.Create(this.constructor), this)
+        InstanceMeta.Get(this, true).bindContainer(container)
       }
     }
   }
