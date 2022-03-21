@@ -14,10 +14,14 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Destroy = exports.GetContainer = exports.Container = exports.Root = exports.Concat = exports.Already = exports.Service = exports.InjectRef = exports.Inject = void 0;
@@ -151,7 +155,7 @@ function Root() {
                     args[_i] = arguments[_i];
                 }
                 var _this = _super.apply(this, args) || this;
-                var container = new (container_1.default.bind.apply(container_1.default, __spreadArray([void 0], options)))();
+                var container = new (container_1.default.bind.apply(container_1.default, __spreadArray([void 0], options, false)))();
                 container.setData(token_1.default.Create(_this.constructor), _this);
                 instance_meta_1.default.Get(_this, true).bindContainer(container).init(container);
                 return _this;
@@ -183,7 +187,7 @@ function Container() {
                     args[_i] = arguments[_i];
                 }
                 var _this = _super.apply(this, args) || this;
-                var container = new (container_1.default.bind.apply(container_1.default, __spreadArray([void 0], options)))();
+                var container = new (container_1.default.bind.apply(container_1.default, __spreadArray([void 0], options, false)))();
                 container.setData(token_1.default.Create(_this.constructor), _this);
                 instance_meta_1.default.Get(_this, true).bindContainer(container);
                 return _this;

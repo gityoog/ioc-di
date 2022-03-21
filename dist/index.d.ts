@@ -1,4 +1,5 @@
 import "reflect-metadata";
+import { AbstractConstructor } from "./util";
 import DiContainer from './container';
 /** 注入属性
  * - `@Inject(token?) prop: Type`
@@ -15,7 +16,7 @@ export declare function InjectRef(ref: () => any): <T extends Object>(prototype:
  *
  * `class Target {}`
  */
-export declare function Service(): <T>(target: T) => T;
+export declare function Service(): <T extends AbstractConstructor>(target: T) => T;
 /**
  * 当容器初始化完成后才运行
  *
@@ -39,11 +40,11 @@ export declare function Concat<T extends Object>(target: Object, instance: T, to
  * `class Target { }`
  *
  */
-export declare function Root(...options: ConstructorParameters<typeof DiContainer>): <T extends new (...args: any[]) => any>(target: T) => {
+export declare function Root(...options: ConstructorParameters<typeof DiContainer>): <T extends AbstractConstructor>(target: T) => {
     new (...args: any[]): {
         [x: string]: any;
     };
-} & T;
+};
 /**
  * 为当前类添加一个子容器
  *
@@ -52,10 +53,10 @@ export declare function Root(...options: ConstructorParameters<typeof DiContaine
  * `class Target { }`
  *
  */
-export declare function Container(...options: ConstructorParameters<typeof DiContainer>): <T extends new (...args: any[]) => any>(target: T) => {
+export declare function Container(...options: ConstructorParameters<typeof DiContainer>): <T extends AbstractConstructor>(target: T) => {
     new (...args: any[]): {
         [x: string]: any;
     };
-} & T;
+};
 export declare function GetContainer(instance: Object): DiContainer | undefined;
 export declare function Destroy<T extends object>(prototype: T, propertyKey: string, descriptor: PropertyDescriptor): void;

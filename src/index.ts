@@ -1,5 +1,5 @@
 import "reflect-metadata"
-import { Constructor } from "./util"
+import { Constructor, AbstractConstructor } from "./util"
 import DiContainer from './container'
 import InstanceMeta from './instance-meta'
 import Token from "./token"
@@ -48,8 +48,8 @@ export function InjectRef(ref: () => any) {
  * `class Target {}`
  */
 export function Service() {
-  return function <T>(target: T) {
-    return class extends (target as any) {
+  return function <T extends AbstractConstructor>(target: T) {
+    return class extends (target as unknown as Constructor) {
       constructor(...args: any[]) {
         super(...args)
         InstanceMeta.Init(this, (target as unknown as Constructor).prototype)
@@ -105,8 +105,8 @@ export function Concat<T extends Object>(target: Object, instance: T, token?: an
  * 
  */
 export function Root(...options: ConstructorParameters<typeof DiContainer>) {
-  return function <T extends new (...args: any[]) => any>(target: T) {
-    return class extends target {
+  return function <T extends AbstractConstructor>(target: T) {
+    return class extends (target as unknown as Constructor) {
       constructor(...args: any[]) {
         super(...args)
         const container = new DiContainer(...options)
@@ -126,8 +126,8 @@ export function Root(...options: ConstructorParameters<typeof DiContainer>) {
  * 
  */
 export function Container(...options: ConstructorParameters<typeof DiContainer>) {
-  return function <T extends new (...args: any[]) => any>(target: T) {
-    return class extends target {
+  return function <T extends AbstractConstructor>(target: T) {
+    return class extends (target as unknown as Constructor) {
       constructor(...args: any[]) {
         super(...args)
         const container = new DiContainer(...options)

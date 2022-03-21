@@ -20,14 +20,14 @@ var Injection = /** @class */ (function () {
             constructor = this.options.ref();
         }
         else {
-            if (util_1.isClass(this.options.token)) {
+            if ((0, util_1.isClass)(this.options.token)) {
                 constructor = this.options.token;
             }
             else {
                 constructor = this.options.type;
             }
         }
-        if (util_1.isClass(constructor)) {
+        if ((0, util_1.isClass)(constructor)) {
             return new constructor;
         }
         else {
