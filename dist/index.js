@@ -1,43 +1,19 @@
 "use strict";
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Destroy = exports.GetContainer = exports.Container = exports.Root = exports.Concat = exports.Already = exports.Service = exports.InjectRef = exports.Inject = void 0;
 require("reflect-metadata");
-var container_1 = require("./container");
-var instance_meta_1 = require("./instance-meta");
-var token_1 = require("./token");
-var prototype_meta_1 = require("./prototype-meta");
+const container_1 = require("./container");
+const instance_meta_1 = require("./instance-meta");
+const token_1 = require("./token");
+const prototype_meta_1 = require("./prototype-meta");
 /** 注入属性
  * - `@Inject(token?) prop: Type`
  */
 function Inject(token) {
     return function (prototype, key) {
         prototype_meta_1.default.AddInjection(prototype, {
-            key: key,
-            token: token,
+            key,
+            token,
             type: Reflect.getMetadata('design:type', prototype, key)
         });
     };
@@ -49,8 +25,8 @@ exports.Inject = Inject;
 function InjectRef(ref) {
     return function (prototype, key) {
         prototype_meta_1.default.AddInjection(prototype, {
-            key: key,
-            ref: ref
+            key,
+            ref
         });
     };
 }
@@ -73,19 +49,12 @@ exports.InjectRef = InjectRef;
  */
 function Service() {
     return function (target) {
-        return /** @class */ (function (_super) {
-            __extends(class_1, _super);
-            function class_1() {
-                var args = [];
-                for (var _i = 0; _i < arguments.length; _i++) {
-                    args[_i] = arguments[_i];
-                }
-                var _this = _super.apply(this, args) || this;
-                instance_meta_1.default.Init(_this, target.prototype);
-                return _this;
+        return class extends target {
+            constructor(...args) {
+                super(...args);
+                instance_meta_1.default.Init(this, target.prototype);
             }
-            return class_1;
-        }(target));
+        };
     };
 }
 exports.Service = Service;
@@ -98,15 +67,10 @@ exports.Service = Service;
  * }`
  */
 function Already(target, propertyKey, descriptor) {
-    var method = descriptor.value;
-    descriptor.value = function () {
-        var _this = this;
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
-        }
-        instance_meta_1.default.Get(this, true).afterReady(function () {
-            method.apply(_this, args);
+    const method = descriptor.value;
+    descriptor.value = function (...args) {
+        instance_meta_1.default.Get(this, true).afterReady(() => {
+            method.apply(this, args);
         });
     };
 }
@@ -117,8 +81,8 @@ exports.Already = Already;
  * `Concat(this, new Class)`
  */
 function Concat(target, instance, token) {
-    instance_meta_1.default.Get(target, true).onReady(function (container) {
-        var meta = instance_meta_1.default.Get(instance);
+    instance_meta_1.default.Get(target, true).onReady(container => {
+        const meta = instance_meta_1.default.Get(instance);
         if (!meta) {
             throw new Error('Can\'t use target to initialize this');
         }
@@ -141,27 +105,16 @@ exports.Concat = Concat;
  * `class Target { }`
  *
  */
-function Root() {
-    var options = [];
-    for (var _i = 0; _i < arguments.length; _i++) {
-        options[_i] = arguments[_i];
-    }
+function Root(...options) {
     return function (target) {
-        return /** @class */ (function (_super) {
-            __extends(class_2, _super);
-            function class_2() {
-                var args = [];
-                for (var _i = 0; _i < arguments.length; _i++) {
-                    args[_i] = arguments[_i];
-                }
-                var _this = _super.apply(this, args) || this;
-                var container = new (container_1.default.bind.apply(container_1.default, __spreadArray([void 0], options, false)))();
-                container.setData(token_1.default.Create(_this.constructor), _this);
-                instance_meta_1.default.Get(_this, true).bindContainer(container).init(container);
-                return _this;
+        return class extends target {
+            constructor(...args) {
+                super(...args);
+                const container = new container_1.default(...options);
+                container.setData(token_1.default.Create(this.constructor), this);
+                instance_meta_1.default.Get(this, true).bindContainer(container).init(container);
             }
-            return class_2;
-        }(target));
+        };
     };
 }
 exports.Root = Root;
@@ -173,27 +126,16 @@ exports.Root = Root;
  * `class Target { }`
  *
  */
-function Container() {
-    var options = [];
-    for (var _i = 0; _i < arguments.length; _i++) {
-        options[_i] = arguments[_i];
-    }
+function Container(...options) {
     return function (target) {
-        return /** @class */ (function (_super) {
-            __extends(class_3, _super);
-            function class_3() {
-                var args = [];
-                for (var _i = 0; _i < arguments.length; _i++) {
-                    args[_i] = arguments[_i];
-                }
-                var _this = _super.apply(this, args) || this;
-                var container = new (container_1.default.bind.apply(container_1.default, __spreadArray([void 0], options, false)))();
-                container.setData(token_1.default.Create(_this.constructor), _this);
-                instance_meta_1.default.Get(_this, true).bindContainer(container);
-                return _this;
+        return class extends target {
+            constructor(...args) {
+                super(...args);
+                const container = new container_1.default(...options);
+                container.setData(token_1.default.Create(this.constructor), this);
+                instance_meta_1.default.Get(this, true).bindContainer(container);
             }
-            return class_3;
-        }(target));
+        };
     };
 }
 exports.Container = Container;
