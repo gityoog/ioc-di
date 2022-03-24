@@ -113,7 +113,7 @@ export function Root(...options: ConstructorParameters<typeof DiContainer>) {
         container.setData(Token.Create(this.constructor), this)
         InstanceMeta.Get(this, true).bindContainer(container).init(container)
       }
-    }
+    } as unknown as T
   }
 }
 
@@ -134,7 +134,7 @@ export function Container(...options: ConstructorParameters<typeof DiContainer>)
         container.setData(Token.Create(this.constructor), this)
         InstanceMeta.Get(this, true).bindContainer(container)
       }
-    }
+    } as unknown as T
   }
 }
 

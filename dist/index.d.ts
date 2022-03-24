@@ -40,11 +40,7 @@ export declare function Concat<T extends Object>(target: Object, instance: T, to
  * `class Target { }`
  *
  */
-export declare function Root(...options: ConstructorParameters<typeof DiContainer>): <T extends AbstractConstructor>(target: T) => {
-    new (...args: any[]): {
-        [x: string]: any;
-    };
-};
+export declare function Root(...options: ConstructorParameters<typeof DiContainer>): <T extends AbstractConstructor>(target: T) => T;
 /**
  * 为当前类添加一个子容器
  *
@@ -53,10 +49,6 @@ export declare function Root(...options: ConstructorParameters<typeof DiContaine
  * `class Target { }`
  *
  */
-export declare function Container(...options: ConstructorParameters<typeof DiContainer>): <T extends AbstractConstructor>(target: T) => {
-    new (...args: any[]): {
-        [x: string]: any;
-    };
-};
+export declare function Container(...options: ConstructorParameters<typeof DiContainer>): <T extends AbstractConstructor>(target: T) => T;
 export declare function GetContainer(instance: Object): DiContainer | undefined;
 export declare function Destroy<T extends object>(prototype: T, propertyKey: string, descriptor: PropertyDescriptor): void;
