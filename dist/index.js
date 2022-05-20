@@ -123,6 +123,7 @@ function Init(obj) {
     if (meta) {
         if (meta.container) {
             meta.init(meta.container);
+            return obj;
         }
         else {
             throw new Error('Can\'t find the container, Please use Root or Container');

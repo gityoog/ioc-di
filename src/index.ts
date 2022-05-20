@@ -117,11 +117,12 @@ export function Root(...options: ConstructorParameters<typeof DiContainer>) {
   }
 }
 
-export function Init(obj: Object) {
+export function Init<T extends Object>(obj: T): T {
   const meta = InstanceMeta.Get(obj)
   if (meta) {
     if (meta.container) {
       meta.init(meta.container)
+      return obj
     } else {
       throw new Error('Can\'t find the container, Please use Root or Container')
     }
