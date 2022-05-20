@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Destroy = exports.GetContainer = exports.Container = exports.Root = exports.Concat = exports.Already = exports.Service = exports.InjectRef = exports.Inject = void 0;
+exports.Destroy = exports.GetContainer = exports.Container = exports.Init = exports.Root = exports.Concat = exports.Already = exports.Service = exports.InjectRef = exports.Inject = void 0;
 require("reflect-metadata");
 const container_1 = require("./container");
 const instance_meta_1 = require("./instance-meta");
@@ -118,6 +118,21 @@ function Root(...options) {
     };
 }
 exports.Root = Root;
+function Init(obj) {
+    const meta = instance_meta_1.default.Get(obj);
+    if (meta) {
+        if (meta.container) {
+            meta.init(meta.container);
+        }
+        else {
+            throw new Error('Can\'t find the container, Please use Root or Container');
+        }
+    }
+    else {
+        throw new Error(`It's not a service`);
+    }
+}
+exports.Init = Init;
 /**
  * 为当前类添加一个子容器
  *

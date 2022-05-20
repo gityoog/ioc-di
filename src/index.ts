@@ -117,6 +117,19 @@ export function Root(...options: ConstructorParameters<typeof DiContainer>) {
   }
 }
 
+export function Init(obj: Object) {
+  const meta = InstanceMeta.Get(obj)
+  if (meta) {
+    if (meta.container) {
+      meta.init(meta.container)
+    } else {
+      throw new Error('Can\'t find the container, Please use Root or Container')
+    }
+  } else {
+    throw new Error(`It's not a service`)
+  }
+}
+
 /**
  * 为当前类添加一个子容器
  * 

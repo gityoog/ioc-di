@@ -41,6 +41,7 @@ export declare function Concat<T extends Object>(target: Object, instance: T, to
  *
  */
 export declare function Root(...options: ConstructorParameters<typeof DiContainer>): <T extends AbstractConstructor>(target: T) => T;
+export declare function Init(obj: Object): void;
 /**
  * 为当前类添加一个子容器
  *
