@@ -17,7 +17,7 @@ export default class InstanceMeta {
     private readyCallback;
     onReady(callback: (container: DiContainer) => void): void;
     afterReady(callback: (container: DiContainer) => void): void;
-    private myContainer?;
+    private isBind;
     container?: Container;
     bindContainer(container: Container): this;
     init(targetContainer: Container): void;

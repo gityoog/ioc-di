@@ -9,6 +9,7 @@ class InstanceMeta {
         this.isDestroyed = false;
         this.isInit = false;
         this.readyCallback = [[], []];
+        this.isBind = false;
         setTimeout(() => {
             if (!this.isInit) {
                 console.warn('InstanceMeta Should init', instance);
@@ -48,7 +49,9 @@ class InstanceMeta {
             fn.apply(this.instance, []);
         });
         this.destroys.clear();
-        (_a = this.myContainer) === null || _a === void 0 ? void 0 : _a.destroy();
+        if (this.isBind) {
+            (_a = this.container) === null || _a === void 0 ? void 0 : _a.destroy();
+        }
     }
     onReady(callback) {
         if (this.isInit) {
@@ -67,9 +70,9 @@ class InstanceMeta {
         }
     }
     bindContainer(container) {
-        if (!this.container && !this.myContainer) {
+        if (!this.container && !this.isBind) {
             this.container = container;
-            this.myContainer = container;
+            this.isBind = true;
         }
         else {
             throw new Error('Container already exists');

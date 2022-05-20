@@ -54,7 +54,9 @@ export default class InstanceMeta {
       fn.apply(this.instance, [])
     })
     this.destroys.clear()
-    this.myContainer?.destroy()
+    if (this.isBind) {
+      this.container?.destroy()
+    }
   }
 
   private isInit = false
@@ -74,12 +76,12 @@ export default class InstanceMeta {
     }
   }
 
-  private myContainer?: Container
+  private isBind = false
   container?: Container
   bindContainer(container: Container) {
-    if (!this.container && !this.myContainer) {
+    if (!this.container && !this.isBind) {
       this.container = container
-      this.myContainer = container
+      this.isBind = true
     } else {
       throw new Error('Container already exists')
     }
