@@ -53,3 +53,4 @@ export declare function Init<T extends Object>(obj: T): T;
 export declare function Container(...options: ConstructorParameters<typeof DiContainer>): <T extends AbstractConstructor>(target: T) => T;
 export declare function GetContainer(instance: Object): DiContainer | undefined;
 export declare function Destroy<T extends object>(prototype: T, propertyKey: string, descriptor: PropertyDescriptor): void;
+export declare type ToType<T> = T;

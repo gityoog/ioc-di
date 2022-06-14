@@ -162,3 +162,5 @@ export function Destroy<T extends object>(prototype: T, propertyKey: string, des
     InstanceMeta.Get(this)?.destroy()
   }
 }
+
+export type ToType<T> = T
