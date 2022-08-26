@@ -32,12 +32,12 @@ class Injection {
         }
     }
     getToken() {
-        var _a, _b;
+        var _a;
         if ('ref' in this.options) {
             return token_1.default.Create(this.options.ref());
         }
         else {
-            return token_1.default.Create((_b = (_a = this.options.token) !== null && _a !== void 0 ? _a : this.options.type) !== null && _b !== void 0 ? _b : {});
+            return token_1.default.Create((_a = this.options.token) !== null && _a !== void 0 ? _a : this.options.type);
         }
     }
 }
