@@ -1,6 +1,9 @@
 export default class Token {
   private static map = new Map<any, Token>()
   static Create(value: any) {
+    if (value === Object || value === undefined) {
+      value = Symbol('anonymous')
+    }
     if (this.map.has(value)) {
       return this.map.get(value)!
     } else {

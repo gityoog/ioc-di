@@ -5,6 +5,9 @@ class Token {
         this.value = value;
     }
     static Create(value) {
+        if (value === Object || value === undefined) {
+            value = Symbol('anonymous');
+        }
         if (this.map.has(value)) {
             return this.map.get(value);
         }
