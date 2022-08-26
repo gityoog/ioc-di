@@ -41,7 +41,7 @@ export default class Injection {
     if ('ref' in this.options) {
       return Token.Create(this.options.ref())
     } else {
-      return Token.Create(this.options.token ?? this.options.type)
+      return Token.Create(this.options.token ?? this.options.type ?? {})
     }
   }
 }
