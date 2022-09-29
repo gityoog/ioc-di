@@ -82,7 +82,7 @@ class Foo3 {}
 
 ## changelog
 
-- 2022-09-29 add `Put` method
+- 2022-09-29 add `Put` method, export `DiContainer` `InstanceMeta` `PrototypeMeta`
 
 ## 运行流程
 

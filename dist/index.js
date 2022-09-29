@@ -1,11 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Destroy = exports.GetContainer = exports.Container = exports.Init = exports.Root = exports.Put = exports.Concat = exports.Already = exports.Service = exports.InjectRef = exports.Inject = void 0;
+exports.PrototypeMeta = exports.InstanceMeta = exports.DiContainer = exports.Destroy = exports.GetContainer = exports.Container = exports.Init = exports.Root = exports.Put = exports.Concat = exports.Already = exports.Service = exports.InjectRef = exports.Inject = void 0;
 require("reflect-metadata");
 const container_1 = require("./container");
+exports.DiContainer = container_1.default;
 const instance_meta_1 = require("./instance-meta");
+exports.InstanceMeta = instance_meta_1.default;
 const token_1 = require("./token");
 const prototype_meta_1 = require("./prototype-meta");
+exports.PrototypeMeta = prototype_meta_1.default;
 /** 注入属性
  * - `@Inject(token?) prop: Type`
  */

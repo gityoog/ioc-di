@@ -1,6 +1,8 @@
 import "reflect-metadata";
 import { AbstractConstructor } from "./util";
 import DiContainer from './container';
+import InstanceMeta from './instance-meta';
+import PrototypeMeta from './prototype-meta';
 /** 注入属性
  * - `@Inject(token?) prop: Type`
  */
@@ -55,3 +57,4 @@ export declare function Container(...options: ConstructorParameters<typeof DiCon
 export declare function GetContainer(instance: Object): DiContainer | undefined;
 export declare function Destroy<T extends object>(prototype: T, propertyKey: string, descriptor: PropertyDescriptor): void;
 export declare type ToType<T> = T;
+export { DiContainer, InstanceMeta, PrototypeMeta };

@@ -175,3 +175,9 @@ export function Destroy<T extends object>(prototype: T, propertyKey: string, des
 }
 
 export type ToType<T> = T
+
+export {
+  DiContainer,
+  InstanceMeta,
+  PrototypeMeta
+}
