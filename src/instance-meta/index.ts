@@ -61,6 +61,15 @@ export default class InstanceMeta {
 
   private isInit = false
   private readyCallback: [Array<(container: DiContainer) => void>, Array<(container: DiContainer) => void>] = [[], []]
+  private beforeCallback: Array<(container: DiContainer) => void> = []
+
+  beforeInit(callback: (container: DiContainer) => void) {
+    if (this.isInit) {
+      callback(this.container!)
+    } else {
+      this.beforeCallback.push(callback)
+    }
+  }
   onReady(callback: (container: DiContainer) => void): void {
     if (this.isInit) {
       callback(this.container!)
@@ -99,6 +108,8 @@ export default class InstanceMeta {
     }
     this.isInit = true
     const container = this.container
+    this.beforeCallback.forEach(fn => fn(container))
+    this.beforeCallback = []
     this.injections.map(injection => {
       const token = injection.getToken()
       let value = Reflect.get(this.instance, injection.key)

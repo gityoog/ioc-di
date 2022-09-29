@@ -96,6 +96,17 @@ export function Concat<T extends Object>(target: Object, instance: T, token?: an
   return instance
 }
 
+export function Put<T extends Object>(target: Object, instance: T, token: any) {
+  const meta = InstanceMeta.Get(target, true)
+  meta.beforeInit(container => {
+    container.setData(Token.Create(token), instance)
+  })
+  meta.onReady(container => {
+    InstanceMeta.Get(instance)?.init(container)
+  })
+  return instance
+}
+
 /**
  * 从当前类开始自动初始化容器
  * 

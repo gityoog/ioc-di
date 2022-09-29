@@ -9,6 +9,7 @@ class InstanceMeta {
         this.isDestroyed = false;
         this.isInit = false;
         this.readyCallback = [[], []];
+        this.beforeCallback = [];
         this.isBind = false;
         setTimeout(() => {
             if (!this.isInit) {
@@ -53,6 +54,14 @@ class InstanceMeta {
             (_a = this.container) === null || _a === void 0 ? void 0 : _a.destroy();
         }
     }
+    beforeInit(callback) {
+        if (this.isInit) {
+            callback(this.container);
+        }
+        else {
+            this.beforeCallback.push(callback);
+        }
+    }
     onReady(callback) {
         if (this.isInit) {
             callback(this.container);
@@ -91,6 +100,8 @@ class InstanceMeta {
         }
         this.isInit = true;
         const container = this.container;
+        this.beforeCallback.forEach(fn => fn(container));
+        this.beforeCallback = [];
         this.injections.map(injection => {
             const token = injection.getToken();
             let value = Reflect.get(this.instance, injection.key);

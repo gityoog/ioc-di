@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Destroy = exports.GetContainer = exports.Container = exports.Init = exports.Root = exports.Concat = exports.Already = exports.Service = exports.InjectRef = exports.Inject = void 0;
+exports.Destroy = exports.GetContainer = exports.Container = exports.Init = exports.Root = exports.Put = exports.Concat = exports.Already = exports.Service = exports.InjectRef = exports.Inject = void 0;
 require("reflect-metadata");
 const container_1 = require("./container");
 const instance_meta_1 = require("./instance-meta");
@@ -97,6 +97,18 @@ function Concat(target, instance, token) {
     return instance;
 }
 exports.Concat = Concat;
+function Put(target, instance, token) {
+    const meta = instance_meta_1.default.Get(target, true);
+    meta.beforeInit(container => {
+        container.setData(token_1.default.Create(token), instance);
+    });
+    meta.onReady(container => {
+        var _a;
+        (_a = instance_meta_1.default.Get(instance)) === null || _a === void 0 ? void 0 : _a.init(container);
+    });
+    return instance;
+}
+exports.Put = Put;
 /**
  * 从当前类开始自动初始化容器
  *

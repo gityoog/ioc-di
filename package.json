@@ -1,13 +1,14 @@
 {
   "name": "ioc-di",
-  "version": "1.0.0",
-  "description": "- 待添加",
+  "version": "1.1.0",
+  "description": "",
   "main": "./dist/index.js",
   "dependencies": {
-    "reflect-metadata": "^0.1.13",
+    "reflect-metadata": "^0.1.13"
+  },
+  "devDependencies": {
     "typescript": "^4.3.2"
   },
-  "devDependencies": {},
   "scripts": {},
   "author": "",
   "license": "ISC"

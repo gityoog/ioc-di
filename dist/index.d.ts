@@ -32,6 +32,7 @@ export declare function Already<T extends object>(target: T, propertyKey: string
  * `Concat(this, new Class)`
  */
 export declare function Concat<T extends Object>(target: Object, instance: T, token?: any): T;
+export declare function Put<T extends Object>(target: Object, instance: T, token: any): T;
 /**
  * 从当前类开始自动初始化容器
  *

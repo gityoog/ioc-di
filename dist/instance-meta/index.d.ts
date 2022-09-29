@@ -15,6 +15,8 @@ export default class InstanceMeta {
     destroy(): void;
     private isInit;
     private readyCallback;
+    private beforeCallback;
+    beforeInit(callback: (container: DiContainer) => void): void;
     onReady(callback: (container: DiContainer) => void): void;
     afterReady(callback: (container: DiContainer) => void): void;
     private isBind;
