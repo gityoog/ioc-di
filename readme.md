@@ -83,6 +83,7 @@ class Foo3 {}
 ## changelog
 
 - 2022-09-29 add `Put` method, export `DiContainer` `InstanceMeta` `PrototypeMeta`
+- 2022-11-17 define injection prop after create
 
 ## 运行流程
 

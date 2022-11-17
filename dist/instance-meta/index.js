@@ -19,7 +19,7 @@ class InstanceMeta {
     }
     static Init(instance, prototype) {
         const data = this.Get(instance, true);
-        data.addInjections(prototype);
+        data.addInjections(instance, prototype);
         data.addDestroyKeys(prototype);
     }
     static Get(instance, create) {
@@ -32,8 +32,19 @@ class InstanceMeta {
             return data;
         }
     }
-    addInjections(prototype) {
-        this.injections.push(...prototype_meta_1.default.GetInjections(prototype));
+    addInjections(instance, prototype) {
+        const injections = prototype_meta_1.default.GetInjections(prototype);
+        this.injections.push(...injections);
+        injections.forEach(injection => {
+            if (!(injection.key in instance)) {
+                Object.defineProperty(instance, injection.key, {
+                    enumerable: true,
+                    configurable: true,
+                    writable: true,
+                    value: undefined
+                });
+            }
+        });
     }
     addDestroyKeys(prototype) {
         prototype_meta_1.default.GetDestroys(prototype).forEach(fn => {

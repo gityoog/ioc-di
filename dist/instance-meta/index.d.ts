@@ -8,7 +8,7 @@ export default class InstanceMeta {
     static Get(instance: Object, create: true): InstanceMeta;
     private constructor();
     private injections;
-    addInjections(prototype: Object): void;
+    private addInjections;
     private destroys;
     addDestroyKeys(prototype: Object): void;
     private isDestroyed;

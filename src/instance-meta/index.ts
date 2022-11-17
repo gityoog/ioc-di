@@ -7,7 +7,7 @@ export default class InstanceMeta {
   static map = new WeakMap<Object, InstanceMeta>()
   static Init(instance: Object, prototype: Object) {
     const data = this.Get(instance, true)
-    data.addInjections(prototype)
+    data.addInjections(instance, prototype)
     data.addDestroyKeys(prototype)
   }
   static Get(instance: Object): InstanceMeta | undefined
@@ -32,10 +32,21 @@ export default class InstanceMeta {
   }
 
   private injections: Injection[] = []
-  addInjections(prototype: Object) {
+  private addInjections(instance: Object, prototype: Object) {
+    const injections = PrototypeMeta.GetInjections(prototype)
     this.injections.push(
-      ...PrototypeMeta.GetInjections(prototype)
+      ...injections
     )
+    injections.forEach(injection => {
+      if (!(injection.key in instance)) {
+        Object.defineProperty(instance, injection.key, {
+          enumerable: true,
+          configurable: true,
+          writable: true,
+          value: undefined
+        })
+      }
+    })
   }
 
   private destroys = new Set<Function>()
