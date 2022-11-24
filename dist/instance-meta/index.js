@@ -10,6 +10,7 @@ class InstanceMeta {
         this.children = [];
         this.beforeCallback = [];
         this.readyCallback = [];
+        this.isAfterReady = false;
         this.afterReadyCallback = [];
         this.destroys = new Set();
         this.isDestroyed = false;
@@ -116,6 +117,10 @@ class InstanceMeta {
         }
     }
     afterInit() {
+        if (this.isAfterReady) {
+            return;
+        }
+        this.isAfterReady = true;
         this.afterReadyCallback.forEach(fn => fn());
         this.afterReadyCallback = [];
         this.children.forEach(child => {

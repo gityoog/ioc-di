@@ -122,7 +122,12 @@ export default class InstanceMeta {
     }
   }
 
+  private isAfterReady = false
   private afterInit() {
+    if (this.isAfterReady) {
+      return
+    }
+    this.isAfterReady = true
     this.afterReadyCallback.forEach(fn => fn())
     this.afterReadyCallback = []
     this.children.forEach(child => {
