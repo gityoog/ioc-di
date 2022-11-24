@@ -9,25 +9,25 @@ type options = {
 }
 
 export default class Container {
-  dataMap = new WeakMap<Token, any>()
-  resolverMap = new WeakMap<Token, () => any>()
-  dataSet = new Set<any>()
-  parent?: this
-  link(parent: this) {
-    parent.children.add(this)
-    this.parent = parent
-  }
-
-  children = new Set<this>()
-
-  register<T>(key: any, resolver: () => T) {
-    this.resolverMap.set(Token.Create(key), resolver)
-  }
+  private dataMap = new WeakMap<Token, any>()
+  private resolverMap = new WeakMap<Token, () => any>()
+  private dataSet = new Set<any>()
+  private children = new Set<this>()
+  private parent?: this
 
   constructor(options?: options) {
     options?.providers?.forEach(item => {
       this.register(item.token, item.resolver)
     })
+  }
+
+  link(parent: this) {
+    parent.children.add(this)
+    this.parent = parent
+  }
+
+  register<T>(key: any, resolver: () => T) {
+    this.resolverMap.set(Token.Create(key), resolver)
   }
 
   getData(token: Token): any {
