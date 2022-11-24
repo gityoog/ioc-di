@@ -86,10 +86,12 @@ export function Concat<T extends Object>(target: Object, instance: T, token?: an
     }
   })
   const meta = InstanceMeta.Get(instance)
-  if (meta) {
-    targetMeta.concat(meta)
-  } else if (init) {
-    throw new Error('Can\'t use target to initialize this')
+  if (init) {
+    if (meta) {
+      targetMeta.concat(meta)
+    } else {
+      throw new Error('Can\'t use target to initialize this')
+    }
   }
   return instance
 }

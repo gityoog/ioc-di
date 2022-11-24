@@ -101,12 +101,18 @@ export default class InstanceMeta {
         Reflect.set(this.instance, injection.key, value)
       }
       return InstanceMeta.Get(value)
-    }).filter(meta => meta?.isInit === false) as InstanceMeta[]
+    }).map(meta => {
+      if (meta && !meta.isInit) {
+        meta.init(container)
+        return meta
+      }
+    }).filter(meta => meta) as InstanceMeta[]
 
-    this.children.unshift(...metas)
-    this.children.forEach(meta => {
-      meta.init(container)
+    this.children.forEach(child => {
+      child.init(container)
     })
+    this.children.unshift(...metas)
+
     this.readyCallback.forEach(fn => fn(container))
     this.readyCallback = []
     if (start) {

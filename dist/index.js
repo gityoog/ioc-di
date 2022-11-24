@@ -82,11 +82,13 @@ function Concat(target, instance, token, init = true) {
         }
     });
     const meta = instance_meta_1.default.Get(instance);
-    if (meta) {
-        targetMeta.concat(meta);
-    }
-    else if (init) {
-        throw new Error('Can\'t use target to initialize this');
+    if (init) {
+        if (meta) {
+            targetMeta.concat(meta);
+        }
+        else {
+            throw new Error('Can\'t use target to initialize this');
+        }
     }
     return instance;
 }

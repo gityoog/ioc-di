@@ -99,11 +99,16 @@ class InstanceMeta {
                 Reflect.set(this.instance, injection.key, value);
             }
             return InstanceMeta.Get(value);
-        }).filter(meta => (meta === null || meta === void 0 ? void 0 : meta.isInit) === false);
-        this.children.unshift(...metas);
-        this.children.forEach(meta => {
-            meta.init(container);
+        }).map(meta => {
+            if (meta && !meta.isInit) {
+                meta.init(container);
+                return meta;
+            }
+        }).filter(meta => meta);
+        this.children.forEach(child => {
+            child.init(container);
         });
+        this.children.unshift(...metas);
         this.readyCallback.forEach(fn => fn(container));
         this.readyCallback = [];
         if (start) {
