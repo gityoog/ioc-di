@@ -56,11 +56,13 @@ export default class InstanceMeta {
   }
 
   private children: InstanceMeta[] = []
-  push(child: InstanceMeta) {
+  concat(child: InstanceMeta) {
     if (this.isInit) {
       child.init(this.container!, true)
-    } else {
+    } else if (!child.isInit) {
       this.children.push(child)
+    } else {
+      console.warn('InstanceMeta already init', child)
     }
   }
 
@@ -75,7 +77,7 @@ export default class InstanceMeta {
 
   init(targetContainer: Container, start = false) {
     if (this.isInit) {
-      return
+      return console.warn('InstanceMeta already init', this)
     }
     this.isInit = true
     if (this.container && this.container !== targetContainer) {
@@ -99,7 +101,7 @@ export default class InstanceMeta {
         Reflect.set(this.instance, injection.key, value)
       }
       return InstanceMeta.Get(value)
-    }).filter(meta => meta !== undefined) as InstanceMeta[]
+    }).filter(meta => meta?.isInit === false) as InstanceMeta[]
 
     this.children.unshift(...metas)
     this.children.forEach(meta => {
@@ -107,7 +109,6 @@ export default class InstanceMeta {
     })
     this.readyCallback.forEach(fn => fn(container))
     this.readyCallback = []
-
     if (start) {
       this.afterInit()
     }
@@ -122,12 +123,7 @@ export default class InstanceMeta {
     }
   }
 
-  private isAfterReady = false
   private afterInit() {
-    if (this.isAfterReady) {
-      return
-    }
-    this.isAfterReady = true
     this.afterReadyCallback.forEach(fn => fn())
     this.afterReadyCallback = []
     this.children.forEach(child => {

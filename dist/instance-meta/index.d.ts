@@ -15,13 +15,12 @@ export default class InstanceMeta {
     private container?;
     bindContainer(container: Container): this;
     private children;
-    push(child: InstanceMeta): void;
+    concat(child: InstanceMeta): void;
     private beforeCallback;
     beforeInit(callback: (container: DiContainer) => void): void;
     init(targetContainer: Container, start?: boolean): void;
     private readyCallback;
     onReady(callback: (container: DiContainer) => void): void;
-    private isAfterReady;
     private afterInit;
     private afterReadyCallback;
     afterReady(callback: () => void): void;

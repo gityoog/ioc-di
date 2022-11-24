@@ -10,7 +10,6 @@ class InstanceMeta {
         this.children = [];
         this.beforeCallback = [];
         this.readyCallback = [];
-        this.isAfterReady = false;
         this.afterReadyCallback = [];
         this.destroys = new Set();
         this.isDestroyed = false;
@@ -53,12 +52,15 @@ class InstanceMeta {
         }
         return this;
     }
-    push(child) {
+    concat(child) {
         if (this.isInit) {
             child.init(this.container, true);
         }
-        else {
+        else if (!child.isInit) {
             this.children.push(child);
+        }
+        else {
+            console.warn('InstanceMeta already init', child);
         }
     }
     beforeInit(callback) {
@@ -71,7 +73,7 @@ class InstanceMeta {
     }
     init(targetContainer, start = false) {
         if (this.isInit) {
-            return;
+            return console.warn('InstanceMeta already init', this);
         }
         this.isInit = true;
         if (this.container && this.container !== targetContainer) {
@@ -97,7 +99,7 @@ class InstanceMeta {
                 Reflect.set(this.instance, injection.key, value);
             }
             return InstanceMeta.Get(value);
-        }).filter(meta => meta !== undefined);
+        }).filter(meta => (meta === null || meta === void 0 ? void 0 : meta.isInit) === false);
         this.children.unshift(...metas);
         this.children.forEach(meta => {
             meta.init(container);
@@ -117,10 +119,6 @@ class InstanceMeta {
         }
     }
     afterInit() {
-        if (this.isAfterReady) {
-            return;
-        }
-        this.isAfterReady = true;
         this.afterReadyCallback.forEach(fn => fn());
         this.afterReadyCallback = [];
         this.children.forEach(child => {
