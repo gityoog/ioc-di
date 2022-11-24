@@ -7,7 +7,7 @@ export default class InstanceMeta {
   static map = new WeakMap<Object, InstanceMeta>()
   static Init(instance: Object, prototype: Object) {
     const data = this.Get(instance, true)
-    data.addInjections(instance, prototype)
+    data.addInjections(prototype)
     data.addDestroyKeys(prototype)
   }
   static Get(instance: Object): InstanceMeta | undefined
@@ -22,6 +22,9 @@ export default class InstanceMeta {
       return data
     }
   }
+  static GetContainer(instance: Object) {
+    return this.Get(instance)?.container
+  }
 
   private constructor(private instance: Object) {
     setTimeout(() => {
@@ -32,21 +35,109 @@ export default class InstanceMeta {
   }
 
   private injections: Injection[] = []
-  private addInjections(instance: Object, prototype: Object) {
+  private addInjections(prototype: Object) {
     const injections = PrototypeMeta.GetInjections(prototype)
     this.injections.push(
       ...injections
     )
-    injections.forEach(injection => {
-      if (!(injection.key in instance)) {
-        Object.defineProperty(instance, injection.key, {
-          enumerable: true,
-          configurable: true,
-          writable: true,
-          value: undefined
-        })
+  }
+
+  private isInit = false
+  private isBind = false
+  private container?: Container
+  bindContainer(container: Container) {
+    if (!this.container && !this.isBind) {
+      this.container = container
+      this.isBind = true
+    } else {
+      throw new Error('Container already exists')
+    }
+    return this
+  }
+
+  private children: InstanceMeta[] = []
+  push(child: InstanceMeta) {
+    if (this.isInit) {
+      child.init(this.container!, true)
+    } else {
+      this.children.push(child)
+    }
+  }
+
+  private beforeCallback: Array<(container: DiContainer) => void> = []
+  beforeInit(callback: (container: DiContainer) => void) {
+    if (this.isInit) {
+      callback(this.container!)
+    } else {
+      this.beforeCallback.push(callback)
+    }
+  }
+
+  init(targetContainer: Container, start = false) {
+    if (this.isInit) {
+      return
+    }
+    this.isInit = true
+    if (this.container && this.container !== targetContainer) {
+      this.container.link(targetContainer)
+    } else {
+      this.container = targetContainer
+    }
+    const container = this.container
+    this.beforeCallback.forEach(fn => fn(container))
+    this.beforeCallback = []
+    const metas = this.injections.map(injection => {
+      const token = injection.getToken()
+      let value = Reflect.get(this.instance, injection.key)
+      if (value !== undefined) {
+        container.setData(token, value)
+      } else {
+        value = container.factory(token, () => injection.factory())
+        if (value === undefined) {
+          throw new Error('Injection failure')
+        }
+        Reflect.set(this.instance, injection.key, value)
       }
+      return InstanceMeta.Get(value)
+    }).filter(meta => meta !== undefined) as InstanceMeta[]
+
+    this.children.unshift(...metas)
+    this.children.forEach(meta => {
+      meta.init(container)
     })
+    this.readyCallback.forEach(fn => fn(container))
+    this.readyCallback = []
+
+    if (start) {
+      this.afterInit()
+    }
+  }
+
+  private readyCallback: Array<(container: DiContainer) => void> = []
+  onReady(callback: (container: DiContainer) => void): void {
+    if (this.isInit) {
+      callback(this.container!)
+    } else {
+      this.readyCallback.push(callback)
+    }
+  }
+
+  private afterInit() {
+    this.afterReadyCallback.forEach(fn => fn())
+    this.afterReadyCallback = []
+    this.children.forEach(child => {
+      child.afterInit()
+    })
+    this.children = []
+  }
+
+  private afterReadyCallback: Array<() => void> = []
+  afterReady(callback: () => void) {
+    if (this.isInit) {
+      callback()
+    } else {
+      this.afterReadyCallback.push(callback)
+    }
   }
 
   private destroys = new Set<Function>()
@@ -68,76 +159,5 @@ export default class InstanceMeta {
     if (this.isBind) {
       this.container?.destroy()
     }
-  }
-
-  private isInit = false
-  private readyCallback: [Array<(container: DiContainer) => void>, Array<(container: DiContainer) => void>] = [[], []]
-  private beforeCallback: Array<(container: DiContainer) => void> = []
-
-  beforeInit(callback: (container: DiContainer) => void) {
-    if (this.isInit) {
-      callback(this.container!)
-    } else {
-      this.beforeCallback.push(callback)
-    }
-  }
-  onReady(callback: (container: DiContainer) => void): void {
-    if (this.isInit) {
-      callback(this.container!)
-    } else {
-      this.readyCallback[0].push(callback)
-    }
-  }
-  afterReady(callback: (container: DiContainer) => void) {
-    if (this.isInit) {
-      callback(this.container!)
-    } else {
-      this.readyCallback[1].push(callback)
-    }
-  }
-
-  private isBind = false
-  container?: Container
-  bindContainer(container: Container) {
-    if (!this.container && !this.isBind) {
-      this.container = container
-      this.isBind = true
-    } else {
-      throw new Error('Container already exists')
-    }
-    return this
-  }
-
-  init(targetContainer: Container) {
-    if (this.isInit) {
-      return
-    }
-    if (this.container && this.container !== targetContainer) {
-      this.container.link(targetContainer)
-    } else {
-      this.container = targetContainer
-    }
-    this.isInit = true
-    const container = this.container
-    this.beforeCallback.forEach(fn => fn(container))
-    this.beforeCallback = []
-    this.injections.map(injection => {
-      const token = injection.getToken()
-      let value = Reflect.get(this.instance, injection.key)
-      if (value !== undefined) {
-        container.setData(token, value)
-      } else {
-        value = container.factory(token, () => injection.factory())
-        if (value === undefined) {
-          throw new Error('Injection failure')
-        }
-        Reflect.set(this.instance, injection.key, value)
-      }
-      return value
-    }).forEach(value => {
-      InstanceMeta.Get(value)?.init(container)
-    })
-    this.readyCallback.forEach(item => item.forEach(fn => fn(container)))
-    this.readyCallback = [[], []]
   }
 }

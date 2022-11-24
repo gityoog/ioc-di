@@ -27,14 +27,9 @@ export declare function Service(): <T extends AbstractConstructor>(target: T) =>
  * `method(){
  * }`
  */
-export declare function Already<T extends object>(target: T, propertyKey: string, descriptor: PropertyDescriptor): void;
-/**
- * 使目标类实例使用当前实例的容器
- *
- * `Concat(this, new Class)`
- */
-export declare function Concat<T extends Object>(target: Object, instance: T, token?: any): T;
-export declare function Put<T extends Object>(target: Object, instance: T, token: any): T;
+export declare function Already(target: Object, propertyKey: string, descriptor: PropertyDescriptor): void;
+export declare function Already(afterInit?: boolean): MethodDecorator;
+export declare function Concat<T extends Object>(target: Object, instance: T, token?: any, init?: boolean): T;
 /**
  * 从当前类开始自动初始化容器
  *
@@ -44,7 +39,6 @@ export declare function Put<T extends Object>(target: Object, instance: T, token
  *
  */
 export declare function Root(...options: ConstructorParameters<typeof DiContainer>): <T extends AbstractConstructor>(target: T) => T;
-export declare function Init<T extends Object>(obj: T): T;
 /**
  * 为当前类添加一个子容器
  *

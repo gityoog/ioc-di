@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PrototypeMeta = exports.InstanceMeta = exports.DiContainer = exports.Destroy = exports.GetContainer = exports.Container = exports.Init = exports.Root = exports.Put = exports.Concat = exports.Already = exports.Service = exports.InjectRef = exports.Inject = void 0;
+exports.PrototypeMeta = exports.InstanceMeta = exports.DiContainer = exports.Destroy = exports.GetContainer = exports.Container = exports.Root = exports.Concat = exports.Already = exports.Service = exports.InjectRef = exports.Inject = void 0;
 require("reflect-metadata");
 const container_1 = require("./container");
 exports.DiContainer = container_1.default;
@@ -34,15 +34,6 @@ function InjectRef(ref) {
     };
 }
 exports.InjectRef = InjectRef;
-// export function Optional(token?: any) {
-//   return function <T extends Object>(prototype: T, key: string) {
-//     PrototypeMeta.AddInjection(prototype, {
-//       key,
-//       token,
-//       type: Reflect.getMetadata('design:type', prototype, key)
-//     })
-//   }
-// }
 /**
  * 标记当前类需要容器初始化
  *
@@ -61,57 +52,45 @@ function Service() {
     };
 }
 exports.Service = Service;
-/**
- * 当容器初始化完成后才运行
- *
- * `@Already`
- *
- * `method(){
- * }`
- */
-function Already(target, propertyKey, descriptor) {
-    const method = descriptor.value;
-    descriptor.value = function (...args) {
-        instance_meta_1.default.Get(this, true).afterReady(() => {
-            method.apply(this, args);
-        });
+function Already(...args) {
+    const generate = (afterReady) => {
+        return function (target, propertyKey, descriptor) {
+            const method = descriptor.value;
+            descriptor.value = function (...args) {
+                instance_meta_1.default.Get(this, true)[afterReady ? 'afterReady' : 'onReady'](() => {
+                    method.apply(this, args);
+                });
+            };
+        };
     };
+    if (args.length > 1) {
+        return generate(false)(...args);
+    }
+    else {
+        return generate(args[0] === true);
+    }
 }
 exports.Already = Already;
-/**
- * 使目标类实例使用当前实例的容器
- *
- * `Concat(this, new Class)`
- */
-function Concat(target, instance, token) {
-    instance_meta_1.default.Get(target, true).onReady(container => {
-        const meta = instance_meta_1.default.Get(instance);
-        if (!meta) {
-            throw new Error('Can\'t use target to initialize this');
-        }
+function Concat(target, instance, token, init = true) {
+    const targetMeta = instance_meta_1.default.Get(target, true);
+    targetMeta.beforeInit(container => {
         if (token) {
             container.setData(token_1.default.Create(token), instance);
         }
         else {
             container.addData(instance);
         }
-        meta.init(container);
     });
+    const meta = instance_meta_1.default.Get(instance);
+    if (meta) {
+        targetMeta.push(meta);
+    }
+    else if (init) {
+        throw new Error('Can\'t use target to initialize this');
+    }
     return instance;
 }
 exports.Concat = Concat;
-function Put(target, instance, token) {
-    const meta = instance_meta_1.default.Get(target, true);
-    meta.beforeInit(container => {
-        container.setData(token_1.default.Create(token), instance);
-    });
-    meta.onReady(container => {
-        var _a;
-        (_a = instance_meta_1.default.Get(instance)) === null || _a === void 0 ? void 0 : _a.init(container);
-    });
-    return instance;
-}
-exports.Put = Put;
 /**
  * 从当前类开始自动初始化容器
  *
@@ -127,28 +106,12 @@ function Root(...options) {
                 super(...args);
                 const container = new container_1.default(...options);
                 container.setData(token_1.default.Create(this.constructor), this);
-                instance_meta_1.default.Get(this, true).bindContainer(container).init(container);
+                instance_meta_1.default.Get(this, true).bindContainer(container).init(container, true);
             }
         };
     };
 }
 exports.Root = Root;
-function Init(obj) {
-    const meta = instance_meta_1.default.Get(obj);
-    if (meta) {
-        if (meta.container) {
-            meta.init(meta.container);
-            return obj;
-        }
-        else {
-            throw new Error('Can\'t find the container, Please use Root or Container');
-        }
-    }
-    else {
-        throw new Error(`It's not a service`);
-    }
-}
-exports.Init = Init;
 /**
  * 为当前类添加一个子容器
  *
@@ -171,8 +134,7 @@ function Container(...options) {
 }
 exports.Container = Container;
 function GetContainer(instance) {
-    var _a;
-    return (_a = instance_meta_1.default.Get(instance)) === null || _a === void 0 ? void 0 : _a.container;
+    return instance_meta_1.default.GetContainer(instance);
 }
 exports.GetContainer = GetContainer;
 function Destroy(prototype, propertyKey, descriptor) {

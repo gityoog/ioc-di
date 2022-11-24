@@ -30,16 +30,6 @@ export function InjectRef(ref: () => any) {
   }
 }
 
-// export function Optional(token?: any) {
-//   return function <T extends Object>(prototype: T, key: string) {
-//     PrototypeMeta.AddInjection(prototype, {
-//       key,
-//       token,
-//       type: Reflect.getMetadata('design:type', prototype, key)
-//     })
-//   }
-// }
-
 /**
  * 标记当前类需要容器初始化
  * 
@@ -66,44 +56,41 @@ export function Service() {
  * `method(){
  * }`
  */
-export function Already<T extends object>(target: T, propertyKey: string, descriptor: PropertyDescriptor) {
-  const method = descriptor.value as Function
-  descriptor.value = function (...args: any[]) {
-    InstanceMeta.Get(this, true).afterReady(() => {
-      method.apply(this, args)
-    })
+export function Already(target: Object, propertyKey: string, descriptor: PropertyDescriptor): void
+export function Already(afterInit?: boolean): MethodDecorator
+export function Already(...args: [afterInit?: boolean] | [target: Object, propertyKey: string, descriptor: PropertyDescriptor]): MethodDecorator | void {
+  const generate = (afterReady: boolean) => {
+    return function (target: Object, propertyKey: string, descriptor: PropertyDescriptor): void {
+      const method = descriptor.value as Function
+      descriptor.value = function (...args: any[]) {
+        InstanceMeta.Get(this, true)[afterReady ? 'afterReady' : 'onReady'](() => {
+          method.apply(this, args)
+        })
+      }
+    }
+  }
+  if (args.length > 1) {
+    return generate(false)(...args as [target: Object, propertyKey: string, descriptor: PropertyDescriptor])
+  } else {
+    return generate(args[0] === true)
   }
 }
 
-/**
- * 使目标类实例使用当前实例的容器
- * 
- * `Concat(this, new Class)`
- */
-export function Concat<T extends Object>(target: Object, instance: T, token?: any) {
-  InstanceMeta.Get(target, true).onReady(container => {
-    const meta = InstanceMeta.Get(instance)
-    if (!meta) {
-      throw new Error('Can\'t use target to initialize this')
-    }
+export function Concat<T extends Object>(target: Object, instance: T, token?: any, init = true) {
+  const targetMeta = InstanceMeta.Get(target, true)
+  targetMeta.beforeInit(container => {
     if (token) {
       container.setData(Token.Create(token), instance)
     } else {
       container.addData(instance)
     }
-    meta.init(container)
   })
-  return instance
-}
-
-export function Put<T extends Object>(target: Object, instance: T, token: any) {
-  const meta = InstanceMeta.Get(target, true)
-  meta.beforeInit(container => {
-    container.setData(Token.Create(token), instance)
-  })
-  meta.onReady(container => {
-    InstanceMeta.Get(instance)?.init(container)
-  })
+  const meta = InstanceMeta.Get(instance)
+  if (meta) {
+    targetMeta.push(meta)
+  } else if (init) {
+    throw new Error('Can\'t use target to initialize this')
+  }
   return instance
 }
 
@@ -122,23 +109,9 @@ export function Root(...options: ConstructorParameters<typeof DiContainer>) {
         super(...args)
         const container = new DiContainer(...options)
         container.setData(Token.Create(this.constructor), this)
-        InstanceMeta.Get(this, true).bindContainer(container).init(container)
+        InstanceMeta.Get(this, true).bindContainer(container).init(container, true)
       }
     } as unknown as T
-  }
-}
-
-export function Init<T extends Object>(obj: T): T {
-  const meta = InstanceMeta.Get(obj)
-  if (meta) {
-    if (meta.container) {
-      meta.init(meta.container)
-      return obj
-    } else {
-      throw new Error('Can\'t find the container, Please use Root or Container')
-    }
-  } else {
-    throw new Error(`It's not a service`)
   }
 }
 
@@ -164,7 +137,7 @@ export function Container(...options: ConstructorParameters<typeof DiContainer>)
 }
 
 export function GetContainer(instance: Object) {
-  return InstanceMeta.Get(instance)?.container
+  return InstanceMeta.GetContainer(instance)
 }
 
 export function Destroy<T extends object>(prototype: T, propertyKey: string, descriptor: PropertyDescriptor) {
