@@ -53,14 +53,16 @@ class InstanceMeta {
         return this;
     }
     concat(child) {
-        if (this.isInit) {
-            child.init(this.container, true);
-        }
-        else if (!child.isInit) {
-            this.children.push(child);
+        if (child.isInit) {
+            console.warn('InstanceMeta already init', child);
         }
         else {
-            console.warn('InstanceMeta already init', child);
+            if (this.isInit) {
+                child.init(this.container, true);
+            }
+            else {
+                this.children.push(child);
+            }
         }
     }
     beforeInit(callback) {

@@ -57,12 +57,14 @@ export default class InstanceMeta {
 
   private children: InstanceMeta[] = []
   concat(child: InstanceMeta) {
-    if (this.isInit) {
-      child.init(this.container!, true)
-    } else if (!child.isInit) {
-      this.children.push(child)
-    } else {
+    if (child.isInit) {
       console.warn('InstanceMeta already init', child)
+    } else {
+      if (this.isInit) {
+        child.init(this.container!, true)
+      } else {
+        this.children.push(child)
+      }
     }
   }
 
