@@ -1,7 +1,7 @@
 {
   "name": "ioc-di",
   "version": "1.2.6",
-  "description": "ioc-di",
+  "description": "frontend ioc-di",
   "main": "./dist/index.js",
   "dependencies": {
     "reflect-metadata": "^0.1.13"
