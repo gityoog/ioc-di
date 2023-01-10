@@ -1,6 +1,10 @@
 ## 安装
 
 ```
+$ npm install ioc-di@npm:@gityoog/ioc-di --save
+```
+
+```
 $ npm install git+https://github.com/gityoog/ioc-di.git --save
 ```
 
