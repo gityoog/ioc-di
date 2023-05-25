@@ -168,5 +168,7 @@ export default class InstanceMeta {
     if (this.isBind) {
       this.container?.destroy()
     }
+    InstanceMeta.map.delete(this.instance)
+    this.instance = null!
   }
 }
