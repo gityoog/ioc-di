@@ -81,6 +81,8 @@ export default class Container {
     this.dataSet.forEach(data => {
       InstanceMeta.Get(data)?.destroy()
     })
+    this.dataMap = null!
+    this.resolverMap = null!
     this.parent = null!
     this.dataSet.clear()
     this.children.clear()
