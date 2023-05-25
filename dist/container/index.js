@@ -72,6 +72,8 @@ class Container {
             var _a;
             (_a = instance_meta_1.default.Get(data)) === null || _a === void 0 ? void 0 : _a.destroy();
         });
+        this.dataMap = null;
+        this.resolverMap = null;
         this.parent = null;
         this.dataSet.clear();
         this.children.clear();
