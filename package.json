@@ -1,6 +1,6 @@
 {
   "name": "ioc-di",
-  "version": "1.2.6",
+  "version": "1.2.7",
   "description": "frontend ioc-di",
   "main": "./dist/index.js",
   "dependencies": {

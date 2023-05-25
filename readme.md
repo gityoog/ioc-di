@@ -89,6 +89,7 @@ class Foo3 {}
 - 2022-09-29 add `Put` method, export `DiContainer` `InstanceMeta` `PrototypeMeta`
 - 2022-11-17 define injection prop after create
 - 2022-11-24 merge `Concat`&`Put`, `Already` add params for `afterInit`
+- 2023-05-25 fix InstanceMeta memory leak
 
 ## 运行流程
 
